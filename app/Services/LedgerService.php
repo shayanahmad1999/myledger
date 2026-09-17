@@ -64,6 +64,40 @@ class LedgerService
         return $transaction;
     }
 
+    public function splitExpense(User $user, array $data): FinancialTransaction
+    {
+        $source = LedgerAccount::findOrFail($data['source_account_id']);
+        $this->assertOwned($user, $source);
+        $splits = $data['splits'] ?? [];
+        abort_if(count($splits) < 2, 422, 'A split transaction must have at least 2 expense splits.');
+
+        $lines = [];
+        $totalAmount = 0.0;
+
+        foreach ($splits as $split) {
+            $category = Category::with('ledgerAccount')->findOrFail($split['category_id']);
+            $this->assertOwned($user, $category);
+            abort_unless($category->type === 'expense', 422, 'All split categories must be expense categories.');
+            $amount = (float) $split['amount'];
+            abort_if($amount <= 0, 422, 'Each split amount must be greater than zero.');
+
+            $totalAmount += $amount;
+            $lines[] = [
+                'account' => $category->ledgerAccount,
+                'debit' => $amount,
+                'memo' => $split['description'] ?? null,
+            ];
+        }
+
+        $lines[] = ['account' => $source, 'credit' => $totalAmount];
+
+        return $this->post($user, TransactionType::Expense, $data['transaction_date'], $totalAmount, $lines, [
+            'source_account_id' => $source->id,
+            'description' => $data['description'] ?? 'Split Expense',
+            'notes' => $data['notes'] ?? null,
+        ]);
+    }
+
     public function income(User $user, array $data): FinancialTransaction
     {
         $destination = LedgerAccount::findOrFail($data['destination_account_id']);

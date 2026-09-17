@@ -6,6 +6,7 @@
                 <a href="{{ route('transactions', ['new' => 'expense']) }}" class="quick-action expense"><i class="bi bi-arrow-up-right"></i><span>Expense</span></a>
                 <a href="{{ route('transactions', ['new' => 'income']) }}" class="quick-action income"><i class="bi bi-arrow-down-left"></i><span>Income</span></a>
                 <a href="{{ route('transactions', ['new' => 'transfer']) }}" class="quick-action transfer"><i class="bi bi-arrow-left-right"></i><span>Transfer</span></a>
+                <a href="{{ route('transactions', ['new' => 'split']) }}" class="quick-action"><i class="bi bi-diagram-2"></i><span>Split</span></a>
                 <a href="{{ route('loans') }}" class="quick-action"><i class="bi bi-cash-stack"></i><span>Loan</span></a>
                 <a href="{{ route('savings') }}" class="quick-action"><i class="bi bi-piggy-bank"></i><span>Saving</span></a>
                 <a href="{{ route('budgets') }}" class="quick-action"><i class="bi bi-bullseye"></i><span>Budget</span></a>

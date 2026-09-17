@@ -18,5 +18,7 @@ enum TransactionType: string
     case Refund = 'refund';
     case Investment = 'investment';
     case InvestmentWithdrawal = 'investment_withdrawal';
+    case CommitteeContribution = 'committee_contribution';
+    case CommitteePayout = 'committee_payout';
     case Reversal = 'reversal';
 }

@@ -4,9 +4,13 @@ use App\Http\Controllers\Web\Ajax\AccountController;
 use App\Http\Controllers\Web\Ajax\AttachmentController;
 use App\Http\Controllers\Web\Ajax\AuditController;
 use App\Http\Controllers\Web\Ajax\BudgetController;
+use App\Http\Controllers\Web\Ajax\CalendarController;
 use App\Http\Controllers\Web\Ajax\CategoryController;
+use App\Http\Controllers\Web\Ajax\CommitteeController;
+use App\Http\Controllers\Web\Ajax\CurrencyController;
 use App\Http\Controllers\Web\Ajax\DashboardController;
 use App\Http\Controllers\Web\Ajax\ExportController;
+use App\Http\Controllers\Web\Ajax\GlobalSearchController;
 use App\Http\Controllers\Web\Ajax\LoanController;
 use App\Http\Controllers\Web\Ajax\NotificationController;
 use App\Http\Controllers\Web\Ajax\PersonController;
@@ -38,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/people', [PageController::class, 'people'])->name('people');
     Route::get('/loans', [PageController::class, 'loans'])->name('loans');
     Route::get('/savings', [PageController::class, 'savings'])->name('savings');
+    Route::get('/committees', [PageController::class, 'committees'])->name('committees');
+    Route::get('/calendar', [PageController::class, 'calendar'])->name('calendar');
     Route::get('/budgets', [PageController::class, 'budgets'])->name('budgets');
     Route::get('/recurring', [PageController::class, 'recurring'])->name('recurring');
     Route::get('/categories', [PageController::class, 'categories'])->name('categories');
@@ -75,6 +81,20 @@ Route::middleware('auth')->group(function () {
         Route::post('/savings-goals/{goal}/contribute', [SavingsGoalController::class, 'contribute']);
         Route::post('/savings-goals/{goal}/withdraw', [SavingsGoalController::class, 'withdraw']);
 
+        Route::get('/committees', [CommitteeController::class, 'index']);
+        Route::post('/committees', [CommitteeController::class, 'store']);
+        Route::get('/committees/{committee}', [CommitteeController::class, 'show']);
+        Route::delete('/committees/{committee}', [CommitteeController::class, 'destroy']);
+        Route::post('/committees/rounds/{round}/members/{member}/payment', [CommitteeController::class, 'recordPayment']);
+        Route::post('/committees/rounds/{round}/payout', [CommitteeController::class, 'disbursePayout']);
+
+        Route::post('/transactions/split', [TransactionController::class, 'split']);
+
+        Route::get('/calendar-events', CalendarController::class);
+        Route::get('/search', GlobalSearchController::class);
+        Route::get('/currencies', [CurrencyController::class, 'index']);
+        Route::patch('/currencies/{currency}', [CurrencyController::class, 'update']);
+
         Route::prefix('reports')->group(function () {
             Route::get('/summary', [ReportController::class, 'summary']);
             Route::get('/expense-by-category', [ReportController::class, 'categories']);
@@ -82,6 +102,15 @@ Route::middleware('auth')->group(function () {
             Route::get('/net-worth', [ReportController::class, 'netWorth']);
             Route::get('/cash-flow', [ReportController::class, 'cashFlow']);
             Route::get('/loans', [ReportController::class, 'loans']);
+            Route::get('/committees', [ReportController::class, 'committees']);
+            Route::get('/trial-balance', [ReportController::class, 'trialBalance']);
+            Route::get('/general-ledger', [ReportController::class, 'generalLedger']);
+            Route::get('/smart-insights', [ReportController::class, 'smartInsights']);
+            Route::get('/balance-sheet', [ReportController::class, 'balanceSheet']);
+            Route::get('/profit-and-loss', [ReportController::class, 'profitAndLoss']);
+            Route::get('/party-ledger', [ReportController::class, 'partyLedger']);
+            Route::get('/comparison', [ReportController::class, 'comparison']);
+            Route::get('/burn-rate', [ReportController::class, 'burnRate']);
         });
 
         Route::get('/audit-log', [AuditController::class, 'index']);

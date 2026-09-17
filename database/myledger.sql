@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 16, 2026 at 03:19 PM
+-- Generation Time: Sep 17, 2026 at 09:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,7 +91,9 @@ INSERT INTO `audit_logs` (`id`, `user_id`, `auditable_type`, `auditable_id`, `ac
 (16, 1, 'App\\Models\\FinancialTransaction', 16, 'created', NULL, '{\"type\":\"reversal\",\"reference_no\":\"REVE-20260915-W8U0UN\",\"amount\":3500,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:11:27', '2026-09-15 12:11:27'),
 (17, 1, 'App\\Models\\FinancialTransaction', 17, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-FMQEBR\",\"amount\":3500,\"date\":\"2026-09-07\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:12:03', '2026-09-15 12:12:03'),
 (18, 1, 'App\\Models\\FinancialTransaction', 18, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-T1OOFS\",\"amount\":12000,\"date\":\"2026-09-08\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
-(19, 1, 'App\\Models\\FinancialTransaction', 19, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260916-LQJTHU\",\"amount\":5000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 09:13:12', '2026-09-16 09:13:12');
+(19, 1, 'App\\Models\\FinancialTransaction', 19, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260916-LQJTHU\",\"amount\":5000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
+(20, 1, 'App\\Models\\FinancialTransaction', 20, 'created', NULL, '{\"type\":\"committee_payout\",\"reference_no\":\"COMM-20260916-AO4BXI\",\"amount\":40000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
+(21, 1, 'App\\Models\\FinancialTransaction', 21, 'created', NULL, '{\"type\":\"committee_payout\",\"reference_no\":\"COMM-20260916-RRQEOA\",\"amount\":10000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-16 13:51:45', '2026-09-16 13:51:45');
 
 -- --------------------------------------------------------
 
@@ -188,6 +190,125 @@ INSERT INTO `categories` (`id`, `user_id`, `ledger_account_id`, `parent_id`, `ty
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `committees`
+--
+
+CREATE TABLE `committees` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `currency_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `contribution_amount` decimal(15,2) NOT NULL,
+  `total_members` int(11) NOT NULL,
+  `total_pool_amount` decimal(15,2) NOT NULL,
+  `frequency` enum('monthly','weekly','biweekly') NOT NULL DEFAULT 'monthly',
+  `start_date` date NOT NULL,
+  `status` enum('active','completed','cancelled') NOT NULL DEFAULT 'active',
+  `my_role` enum('manager','member') NOT NULL DEFAULT 'manager',
+  `my_person_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `committees`
+--
+
+INSERT INTO `committees` (`id`, `user_id`, `currency_id`, `name`, `contribution_amount`, `total_members`, `total_pool_amount`, `frequency`, `start_date`, `status`, `my_role`, `my_person_id`, `notes`, `created_at`, `updated_at`) VALUES
+(2, 1, 1, 'Office Monthly Committee 2026', 5000.00, 2, 10000.00, 'monthly', '2026-09-14', 'active', 'member', 2, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `committee_members`
+--
+
+CREATE TABLE `committee_members` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `committee_id` bigint(20) UNSIGNED NOT NULL,
+  `person_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `slot_number` int(11) NOT NULL,
+  `payout_round_no` int(11) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `committee_members`
+--
+
+INSERT INTO `committee_members` (`id`, `committee_id`, `person_id`, `name`, `slot_number`, `payout_round_no`, `notes`, `created_at`, `updated_at`) VALUES
+(3, 2, 2, 'Ahmed', 1, 1, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29'),
+(4, 2, 1, 'Ali Khan', 2, 2, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `committee_payments`
+--
+
+CREATE TABLE `committee_payments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `committee_round_id` bigint(20) UNSIGNED NOT NULL,
+  `committee_member_id` bigint(20) UNSIGNED NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `status` enum('pending','paid') NOT NULL DEFAULT 'pending',
+  `paid_at` date DEFAULT NULL,
+  `account_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `financial_transaction_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `committee_payments`
+--
+
+INSERT INTO `committee_payments` (`id`, `committee_round_id`, `committee_member_id`, `amount`, `status`, `paid_at`, `account_id`, `financial_transaction_id`, `notes`, `created_at`, `updated_at`) VALUES
+(5, 3, 3, 5000.00, 'paid', '2026-09-16', NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:51:00'),
+(6, 3, 4, 5000.00, 'paid', '2026-09-16', NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:51:05'),
+(7, 4, 3, 5000.00, 'pending', NULL, NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29'),
+(8, 4, 4, 5000.00, 'pending', NULL, NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `committee_rounds`
+--
+
+CREATE TABLE `committee_rounds` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `committee_id` bigint(20) UNSIGNED NOT NULL,
+  `round_number` int(11) NOT NULL,
+  `due_date` date NOT NULL,
+  `winner_member_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `total_expected` decimal(15,2) NOT NULL,
+  `total_collected` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `payout_amount` decimal(15,2) NOT NULL,
+  `payout_status` enum('pending','paid') NOT NULL DEFAULT 'pending',
+  `payout_date` date DEFAULT NULL,
+  `payout_account_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `payout_transaction_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `committee_rounds`
+--
+
+INSERT INTO `committee_rounds` (`id`, `committee_id`, `round_number`, `due_date`, `winner_member_id`, `total_expected`, `total_collected`, `payout_amount`, `payout_status`, `payout_date`, `payout_account_id`, `payout_transaction_id`, `notes`, `created_at`, `updated_at`) VALUES
+(3, 2, 1, '2026-09-14', 3, 10000.00, 10000.00, 10000.00, 'paid', '2026-09-16', 20, 21, NULL, '2026-09-16 13:50:29', '2026-09-16 13:51:45'),
+(4, 2, 2, '2026-10-14', 4, 10000.00, 0.00, 10000.00, 'pending', NULL, NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `currencies`
 --
 
@@ -197,6 +318,7 @@ CREATE TABLE `currencies` (
   `name` varchar(80) NOT NULL,
   `symbol` varchar(12) NOT NULL,
   `decimal_places` tinyint(3) UNSIGNED NOT NULL DEFAULT 2,
+  `exchange_rate` decimal(15,6) NOT NULL DEFAULT 1.000000,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -206,13 +328,13 @@ CREATE TABLE `currencies` (
 -- Dumping data for table `currencies`
 --
 
-INSERT INTO `currencies` (`id`, `code`, `name`, `symbol`, `decimal_places`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'PKR', 'Pakistani Rupee', 'Rs', 2, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(2, 'USD', 'US Dollar', '$', 2, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(3, 'EUR', 'Euro', '€', 2, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(4, 'GBP', 'Pound Sterling', '£', 2, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(5, 'AED', 'UAE Dirham', 'AED', 2, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(6, 'SAR', 'Saudi Riyal', 'SAR', 2, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00');
+INSERT INTO `currencies` (`id`, `code`, `name`, `symbol`, `decimal_places`, `exchange_rate`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'PKR', 'Pakistani Rupee', 'Rs', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
+(2, 'USD', 'US Dollar', '$', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
+(3, 'EUR', 'Euro', '€', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
+(4, 'GBP', 'Pound Sterling', '£', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
+(5, 'AED', 'UAE Dirham', 'AED', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
+(6, 'SAR', 'Saudi Riyal', 'SAR', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00');
 
 -- --------------------------------------------------------
 
@@ -283,7 +405,9 @@ INSERT INTO `financial_transactions` (`id`, `user_id`, `currency_id`, `source_ac
 (16, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 15, 'reversal', 'REVE-20260915-W8U0UN', '2026-09-15', 3500.0000, 'Reversal of EXPE-20260915-GQEEIU', NULL, 'posted', '{\"original_type\":\"expense\"}', '2026-09-15 12:11:27', '2026-09-15 12:11:27'),
 (17, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-FMQEBR', '2026-09-07', 3500.0000, NULL, NULL, 'posted', NULL, '2026-09-15 12:12:03', '2026-09-15 12:12:03'),
 (18, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-T1OOFS', '2026-09-08', 12000.0000, NULL, NULL, 'posted', NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
-(19, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260916-LQJTHU', '2026-09-16', 5000.0000, NULL, NULL, 'posted', NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12');
+(19, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260916-LQJTHU', '2026-09-16', 5000.0000, NULL, NULL, 'posted', NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
+(20, 1, 1, 20, NULL, NULL, 2, NULL, NULL, NULL, NULL, 'committee_payout', 'COMM-20260916-AO4BXI', '2026-09-16', 40000.0000, 'Committee payout disbursed: Office Monthly Committee (Round 1 - Winner: Ahmed)', NULL, 'posted', NULL, '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
+(21, 1, 1, 20, NULL, NULL, 2, NULL, NULL, NULL, NULL, 'committee_payout', 'COMM-20260916-RRQEOA', '2026-09-16', 10000.0000, 'Committee payout disbursed: Office Monthly Committee 2026 (Round 1 - Winner: Ahmed)', NULL, 'posted', NULL, '2026-09-16 13:51:45', '2026-09-16 13:51:45');
 
 -- --------------------------------------------------------
 
@@ -378,7 +502,7 @@ INSERT INTO `ledger_accounts` (`id`, `user_id`, `currency_id`, `parent_id`, `kin
 (4, 1, 1, NULL, 'income', 'interest_income', NULL, 'Interest Income', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
 (5, 1, 1, NULL, 'expense', 'interest_expense', NULL, 'Interest Expense', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
 (6, 1, 1, NULL, 'equity', 'adjustment_equity', NULL, 'Balance Adjustment', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(7, 1, 1, NULL, 'asset', 'cash', NULL, 'Cash in Hand', NULL, NULL, 'wallet', NULL, 0, 1, 1, NULL, '2026-09-15 11:42:24', '2026-09-15 11:43:54'),
+(7, 1, 1, NULL, 'asset', 'cash', NULL, 'Cash in Hand', NULL, NULL, 'wallet', NULL, 0, 0, 1, NULL, '2026-09-15 11:42:24', '2026-09-16 14:49:24'),
 (8, 1, 1, NULL, 'income', 'category', NULL, 'Salary', NULL, NULL, 'payments', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
 (9, 1, 1, NULL, 'income', 'category', NULL, 'Freelancing', NULL, NULL, 'work', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
 (10, 1, 1, NULL, 'income', 'category', NULL, 'Business Income', NULL, NULL, 'business_center', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
@@ -479,7 +603,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (5, '2026_09_15_000002_create_finance_planning', 1),
 (6, '2026_09_15_000003_create_finance_transactions', 1),
 (7, '2026_09_15_000004_create_finance_support', 1),
-(8, '2026_09_15_161036_add_system_code_to_ledger_accounts_table.', 1);
+(8, '2026_09_15_161036_add_system_code_to_ledger_accounts_table.', 1),
+(9, '2026_09_16_000001_create_committees_tables', 2),
+(10, '2026_09_16_000002_add_exchange_rate_to_currencies_table', 3);
 
 -- --------------------------------------------------------
 
@@ -643,7 +769,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('XYMzZVIEWdvnVr0C0HQFiusDEgyO6xfXZA3zScDb', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJxUFpGZHJEQ0JLQmF2dkFpaktsb1dXSXBGRlpCSU9lM2lvTVYxd1U1IiwiX2ZsYXNoIjp7Im9sZCI6W10sIm5ldyI6W119LCJfcHJldmlvdXMiOnsidXJsIjoiaHR0cDpcL1wvMTI3LjAuMC4xOjE5OTlcL3JlZ2lzdGVyIiwicm91dGUiOiJyZWdpc3RlciJ9fQ==', 1789550242);
+('lZ5BhG6GtVLY1tVaV6GDZJ5HFaoDMUGYSjV9gtnB', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJnU3BBdTNGNlNaZU9ha1BpRmQxcG1wWXh3eVR3b0xoQjNLSG1OYlVFIiwidXJsIjpbXSwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMToxOTk5XC9hamF4XC9yZXBvcnRzXC9idXJuLXJhdGU/ZnJvbT0yMDI2LTA5LTAxJnRvPTIwMjYtMDktMzAiLCJyb3V0ZSI6ImFqYXguIn0sIl9mbGFzaCI6eyJvbGQiOltdLCJuZXciOltdfSwibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjF9', 1789570876),
+('z0aZ3mNp8Np2zkrRnHXJTeaJGveqeQfy8FAKr8pS', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJqaXFiNFBCSjQwTkZBcVNCMkt4cFVjZDdyQ3BJUm5oZERRcG5hZWFMIiwidXJsIjpbXSwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMToxOTk5XC9hamF4XC9yZXBvcnRzXC9idXJuLXJhdGU/ZnJvbT0yMDI2LTA5LTAxJnRvPTIwMjYtMDktMzAiLCJyb3V0ZSI6ImFqYXguIn0sIl9mbGFzaCI6eyJvbGQiOltdLCJuZXciOltdfSwibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjF9', 1789630108);
 
 -- --------------------------------------------------------
 
@@ -727,7 +854,11 @@ INSERT INTO `transaction_entries` (`id`, `financial_transaction_id`, `ledger_acc
 (35, 18, 13, NULL, 12000.0000, 0.0000, NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
 (36, 18, 20, NULL, 0.0000, 12000.0000, NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
 (37, 19, 13, NULL, 5000.0000, 0.0000, NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
-(38, 19, 20, NULL, 0.0000, 5000.0000, NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12');
+(38, 19, 20, NULL, 0.0000, 5000.0000, NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
+(39, 20, 1, NULL, 40000.0000, 0.0000, NULL, '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
+(40, 20, 20, NULL, 0.0000, 40000.0000, NULL, '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
+(41, 21, 1, NULL, 10000.0000, 0.0000, NULL, '2026-09-16 13:51:45', '2026-09-16 13:51:45'),
+(42, 21, 20, NULL, 0.0000, 10000.0000, NULL, '2026-09-16 13:51:45', '2026-09-16 13:51:45');
 
 -- --------------------------------------------------------
 
@@ -776,7 +907,7 @@ CREATE TABLE `user_settings` (
 --
 
 INSERT INTO `user_settings` (`id`, `user_id`, `base_currency_id`, `theme`, `locale`, `daily_reminder_time`, `preferences`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'system', 'en', NULL, NULL, '2026-09-15 11:42:24', '2026-09-16 09:14:33');
+(1, 1, 1, 'light', 'en', NULL, NULL, '2026-09-15 11:42:24', '2026-09-16 14:08:57');
 
 --
 -- Indexes for dumped tables
@@ -832,6 +963,43 @@ ALTER TABLE `categories`
   ADD KEY `categories_ledger_account_id_foreign` (`ledger_account_id`),
   ADD KEY `categories_parent_id_foreign` (`parent_id`),
   ADD KEY `categories_user_id_type_is_active_index` (`user_id`,`type`,`is_active`);
+
+--
+-- Indexes for table `committees`
+--
+ALTER TABLE `committees`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `committees_user_id_foreign` (`user_id`),
+  ADD KEY `committees_currency_id_foreign` (`currency_id`),
+  ADD KEY `committees_my_person_id_foreign` (`my_person_id`);
+
+--
+-- Indexes for table `committee_members`
+--
+ALTER TABLE `committee_members`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `committee_members_committee_id_slot_number_unique` (`committee_id`,`slot_number`),
+  ADD KEY `committee_members_person_id_foreign` (`person_id`);
+
+--
+-- Indexes for table `committee_payments`
+--
+ALTER TABLE `committee_payments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `committee_payments_committee_round_id_committee_member_id_unique` (`committee_round_id`,`committee_member_id`),
+  ADD KEY `committee_payments_committee_member_id_foreign` (`committee_member_id`),
+  ADD KEY `committee_payments_account_id_foreign` (`account_id`),
+  ADD KEY `committee_payments_financial_transaction_id_foreign` (`financial_transaction_id`);
+
+--
+-- Indexes for table `committee_rounds`
+--
+ALTER TABLE `committee_rounds`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `committee_rounds_committee_id_round_number_unique` (`committee_id`,`round_number`),
+  ADD KEY `committee_rounds_winner_member_id_foreign` (`winner_member_id`),
+  ADD KEY `committee_rounds_payout_account_id_foreign` (`payout_account_id`),
+  ADD KEY `committee_rounds_payout_transaction_id_foreign` (`payout_transaction_id`);
 
 --
 -- Indexes for table `currencies`
@@ -1025,7 +1193,7 @@ ALTER TABLE `attachments`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `budgets`
@@ -1038,6 +1206,30 @@ ALTER TABLE `budgets`
 --
 ALTER TABLE `categories`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `committees`
+--
+ALTER TABLE `committees`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `committee_members`
+--
+ALTER TABLE `committee_members`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `committee_payments`
+--
+ALTER TABLE `committee_payments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `committee_rounds`
+--
+ALTER TABLE `committee_rounds`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `currencies`
@@ -1055,7 +1247,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `financial_transactions`
 --
 ALTER TABLE `financial_transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -1085,7 +1277,7 @@ ALTER TABLE `loan_payments`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `people`
@@ -1121,7 +1313,7 @@ ALTER TABLE `tags`
 -- AUTO_INCREMENT for table `transaction_entries`
 --
 ALTER TABLE `transaction_entries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1168,6 +1360,39 @@ ALTER TABLE `categories`
   ADD CONSTRAINT `categories_ledger_account_id_foreign` FOREIGN KEY (`ledger_account_id`) REFERENCES `ledger_accounts` (`id`),
   ADD CONSTRAINT `categories_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `categories_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `committees`
+--
+ALTER TABLE `committees`
+  ADD CONSTRAINT `committees_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
+  ADD CONSTRAINT `committees_my_person_id_foreign` FOREIGN KEY (`my_person_id`) REFERENCES `people` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `committees_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `committee_members`
+--
+ALTER TABLE `committee_members`
+  ADD CONSTRAINT `committee_members_committee_id_foreign` FOREIGN KEY (`committee_id`) REFERENCES `committees` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `committee_members_person_id_foreign` FOREIGN KEY (`person_id`) REFERENCES `people` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `committee_payments`
+--
+ALTER TABLE `committee_payments`
+  ADD CONSTRAINT `committee_payments_account_id_foreign` FOREIGN KEY (`account_id`) REFERENCES `ledger_accounts` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `committee_payments_committee_member_id_foreign` FOREIGN KEY (`committee_member_id`) REFERENCES `committee_members` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `committee_payments_committee_round_id_foreign` FOREIGN KEY (`committee_round_id`) REFERENCES `committee_rounds` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `committee_payments_financial_transaction_id_foreign` FOREIGN KEY (`financial_transaction_id`) REFERENCES `financial_transactions` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `committee_rounds`
+--
+ALTER TABLE `committee_rounds`
+  ADD CONSTRAINT `committee_rounds_committee_id_foreign` FOREIGN KEY (`committee_id`) REFERENCES `committees` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `committee_rounds_payout_account_id_foreign` FOREIGN KEY (`payout_account_id`) REFERENCES `ledger_accounts` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `committee_rounds_payout_transaction_id_foreign` FOREIGN KEY (`payout_transaction_id`) REFERENCES `financial_transactions` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `committee_rounds_winner_member_id_foreign` FOREIGN KEY (`winner_member_id`) REFERENCES `committee_members` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `financial_transactions`

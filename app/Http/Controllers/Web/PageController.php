@@ -17,6 +17,8 @@ class PageController extends Controller
     public function recurring(): View { return view('pages.recurring'); }
     public function categories(): View { return view('pages.categories'); }
     public function reports(): View { return view('pages.reports'); }
+    public function committees(): View { return view('pages.committees'); }
+    public function calendar(): View { return view('pages.calendar'); }
     public function notifications(): View { return view('pages.notifications'); }
     public function settings(): View { return view('pages.settings'); }
 }

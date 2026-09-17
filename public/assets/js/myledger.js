@@ -97,10 +97,32 @@ window.MyLedger = (() => {
         return value;
     }
 
+    function initDatePickers(target = document) {
+        if (typeof flatpickr === 'undefined') return;
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        const darkThemeLink = document.querySelector('#flatpickrDarkTheme');
+        if (darkThemeLink) darkThemeLink.disabled = !isDark;
+
+        const elements = target.querySelectorAll('input[type="date"], input.flatpickr-input');
+        elements.forEach(el => {
+            if (el._flatpickr) return;
+            flatpickr(el, {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'M j, Y',
+                allowInput: true,
+                disableMobile: true,
+            });
+        });
+    }
+
     function modal(id, action='show') {
         const el = document.getElementById(id); if (!el) return null;
         const instance = bootstrap.Modal.getOrCreateInstance(el);
-        if (action === 'hide') instance.hide(); else instance.show();
+        if (action === 'hide') instance.hide(); else {
+            instance.show();
+            setTimeout(() => initDatePickers(el), 100);
+        }
         return instance;
     }
 
@@ -110,5 +132,5 @@ window.MyLedger = (() => {
         return qs.toString();
     }
 
-    return { request, payload, money, date, dateTime, esc, toast, errors, clearErrors, fillSelect, typeValue, modal, query };
+    return { request, payload, money, date, dateTime, esc, toast, errors, clearErrors, fillSelect, typeValue, modal, query, initDatePickers };
 })();

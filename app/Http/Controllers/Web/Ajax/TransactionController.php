@@ -78,6 +78,22 @@ class TransactionController extends Controller
         return $this->created($request, $ledger->transfer($request->user(), $data), $data);
     }
 
+    public function split(Request $request, LedgerService $ledger): JsonResponse
+    {
+        $validated = $request->validate([
+            'source_account_id' => 'required|integer|exists:ledger_accounts,id',
+            'transaction_date' => 'required|date',
+            'description' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:5000',
+            'splits' => 'required|array|min:2',
+            'splits.*.category_id' => 'required|integer|exists:categories,id',
+            'splits.*.amount' => 'required|numeric|min:0.01',
+            'splits.*.description' => 'nullable|string|max:255',
+        ]);
+
+        return response()->json($ledger->splitExpense($request->user(), $validated), 201);
+    }
+
     public function reverse(Request $request, FinancialTransaction $transaction, LedgerService $ledger): JsonResponse
     {
         $this->owned($request, $transaction);
