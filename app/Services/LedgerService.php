@@ -280,18 +280,54 @@ class LedgerService
         }
         abort_if(abs($debit - $credit) > 0.0001, 422, 'Transaction is not balanced.');
 
-        $currencyIds = array_values(array_unique(array_map(
-            fn ($line) => (int) $line['account']->currency_id,
-            $lines,
-        )));
-        abort_if(count($currencyIds) !== 1, 422, 'All accounts in a transaction must use the same currency. Currency conversion requires an explicit exchange workflow.');
+        $moneyCurrencies = array_values(array_unique(array_filter(array_map(
+            fn ($line) => $line['account']->type->isUserMoneyAccount() ? (int) $line['account']->currency_id : null,
+            $lines
+        ))));
+        abort_if(count($moneyCurrencies) > 1, 422, 'All money accounts in a transaction must use the same currency. Currency conversion requires an explicit exchange workflow.');
 
-        return DB::transaction(function () use ($user, $type, $date, $amount, $lines, $meta) {
-            $currencyId = $meta['currency_id'] ?? ($lines[0]['account']->currency_id ?? Currency::where('code', config('finance.base_currency'))->value('id'));
+        return DB::transaction(function () use ($user, $type, $date, $amount, $lines, $meta, $moneyCurrencies) {
+            $txCurrencyId = $meta['currency_id'] ?? ($moneyCurrencies[0] ?? $lines[0]['account']->currency_id ?? Currency::where('code', config('finance.base_currency'))->value('id'));
             $reference = $meta['reference_no'] ?? $this->reference($type);
+
+            // --- Base Currency Conversion ---
+            $baseCurrencyId = $user->settings?->base_currency_id;
+            $originalAmount = null;
+            $originalCurrencyId = null;
+
+            if ($baseCurrencyId && (int)$txCurrencyId !== (int)$baseCurrencyId) {
+                $currency = Currency::find($txCurrencyId);
+                $rate = $currency ? (float)$currency->exchange_rate : 1.0;
+
+                if ($rate > 0 && $rate != 1.0) {
+                    // Preserve original values
+                    $originalAmount = $amount;
+                    $originalCurrencyId = (int)$txCurrencyId;
+
+                    // Convert to base currency
+                    $amount = round($amount * $rate, 4);
+
+                    // Convert all ledger line amounts
+                    foreach ($lines as &$line) {
+                        if (isset($line['debit']) && (float)$line['debit'] > 0) {
+                            $line['debit'] = round((float)$line['debit'] * $rate, 4);
+                        }
+                        if (isset($line['credit']) && (float)$line['credit'] > 0) {
+                            $line['credit'] = round((float)$line['credit'] * $rate, 4);
+                        }
+                    }
+                    unset($line);
+
+                    // Use base currency for the stored transaction
+                    $txCurrencyId = $baseCurrencyId;
+                }
+            }
+
             $tx = FinancialTransaction::create([
-                'user_id'=>$user->id,'currency_id'=>$currencyId,'type'=>$type,'reference_no'=>$reference,
-                'transaction_date'=>$date,'amount'=>$amount,'description'=>$meta['description'] ?? null,'notes'=>$meta['notes'] ?? null,
+                'user_id'=>$user->id,'currency_id'=>$txCurrencyId,'type'=>$type,'reference_no'=>$reference,
+                'transaction_date'=>$date,'amount'=>$amount,
+                'original_amount'=>$originalAmount,'original_currency_id'=>$originalCurrencyId,
+                'description'=>$meta['description'] ?? null,'notes'=>$meta['notes'] ?? null,
                 'source_account_id'=>$meta['source_account_id'] ?? null,'destination_account_id'=>$meta['destination_account_id'] ?? null,
                 'category_id'=>$meta['category_id'] ?? null,'person_id'=>$meta['person_id'] ?? null,'loan_id'=>$meta['loan_id'] ?? null,
                 'savings_goal_id'=>$meta['savings_goal_id'] ?? null,'recurring_transaction_id'=>$meta['recurring_transaction_id'] ?? null,
@@ -305,7 +341,7 @@ class LedgerService
             }
             AuditLog::create([
                 'user_id'=>$user->id,'auditable_type'=>FinancialTransaction::class,'auditable_id'=>$tx->id,'action'=>'created',
-                'new_values'=>['type'=>$type->value,'reference_no'=>$reference,'amount'=>$amount,'date'=>$date],
+                'new_values'=>['type'=>$type->value,'reference_no'=>$reference,'amount'=>$amount,'date'=>$date,'original_amount'=>$originalAmount,'original_currency_id'=>$originalCurrencyId],
                 'ip_address'=>request()?->ip(),'user_agent'=>request()?->userAgent(),
             ]);
             return $tx->load(['entries.account','category','person','sourceAccount','destinationAccount']);

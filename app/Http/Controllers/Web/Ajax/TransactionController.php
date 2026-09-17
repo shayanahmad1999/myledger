@@ -107,6 +107,7 @@ class TransactionController extends Controller
         $data = $request->validate(array_merge([
             'amount' => 'required|numeric|min:0.01',
             'transaction_date' => 'required|date',
+            'currency_id' => 'nullable|integer|exists:currencies,id',
             'description' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:5000',
             'reference_no' => 'nullable|string|max:60',

@@ -38,7 +38,8 @@ class AuthController extends Controller
 
     public function registerForm(): View
     {
-        return view('auth.register');
+        $currencies = \App\Models\Currency::where('is_active', true)->get();
+        return view('auth.register', compact('currencies'));
     }
 
     public function register(Request $request, FinanceSetupService $setup): RedirectResponse
@@ -47,6 +48,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)],
+            'currency_id' => ['nullable', 'exists:currencies,id'],
         ]);
 
         $user = User::create([
@@ -55,7 +57,7 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $setup->bootstrapUser($user);
+        $setup->bootstrapUser($user, !empty($data['currency_id']) ? (int)$data['currency_id'] : null);
         Auth::login($user);
         $request->session()->regenerate();
 

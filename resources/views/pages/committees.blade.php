@@ -79,14 +79,22 @@
             </div>
             <div class="modal-body">
                 <div class="row g-3 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <label class="form-label">Committee Name <span class="text-danger">*</span></label>
                         <input class="form-control" name="name" placeholder="e.g. Office Monthly Committee 2026" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Contribution / Member <span class="text-danger">*</span></label>
-                        <input class="form-control" name="contribution_amount" type="number" min="1" step="0.01" placeholder="5000" required>
+                        <input class="form-control" name="contribution_amount" id="committeeContributionInput" type="number" min="1" step="0.01" placeholder="5000" required>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" name="currency_id"></select>
+                    </div>
+                </div>
+                <div id="committeeRateNotice"></div>
+
+                <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <label class="form-label">Frequency <span class="text-danger">*</span></label>
                         <select class="form-select" name="frequency" required>
@@ -95,21 +103,18 @@
                             <option value="biweekly">Bi-weekly</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Start Date <span class="text-danger">*</span></label>
                         <input class="form-control" name="start_date" type="date" value="{{ now()->toDateString() }}" required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Your Role <span class="text-danger">*</span></label>
                         <select class="form-select" name="my_role" required>
                             <option value="manager" selected>Manager / Organizer</option>
                             <option value="member">Participant / Member</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Link Your Person Record</label>
                         <select class="form-select" name="my_person_id">
                             <option value="">Select yourself (Optional)</option>
@@ -408,23 +413,37 @@
     const membersTableBody = document.querySelector('#membersTableBody');
     const payoutForm = document.querySelector('#payoutForm');
 
+    let currencies = [];
+    function updateCommitteeRateNotice() {
+        const amt = formCommittee.contribution_amount.value;
+        const currId = formCommittee.currency_id.value;
+        M.renderCurrencyRateNotice(document.querySelector('#committeeRateNotice'), amt, currId);
+    }
+
     async function loadRefs() {
         try {
-            const [pRes, aRes] = await Promise.all([
+            const [pRes, aRes, cRes] = await Promise.all([
                 M.request('/ajax/people'),
-                M.request('/ajax/accounts')
+                M.request('/ajax/accounts'),
+                M.getCurrencies()
             ]);
             people = pRes || [];
             accounts = aRes || [];
+            currencies = cRes || [];
 
             // Fill self-person select
             M.fillSelect(formCommittee.my_person_id, people, { placeholder: 'Select yourself (Optional)' });
+            M.fillSelect(formCommittee.currency_id, currencies, { label: c => `${c.code} (${c.symbol})`, placeholder: 'Select currency...' });
             M.fillSelect(document.querySelector('#paymentAccountId'), accounts, { placeholder: 'Select account for deposit...' });
             M.fillSelect(payoutForm.account_id, accounts, { placeholder: 'Select account for withdrawal...' });
+            updateCommitteeRateNotice();
         } catch (e) {
             console.error('Error loading references:', e);
         }
     }
+
+    formCommittee.contribution_amount.oninput = updateCommitteeRateNotice;
+    formCommittee.currency_id.onchange = updateCommitteeRateNotice;
 
     async function loadCommittees() {
         try {

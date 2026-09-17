@@ -23,9 +23,21 @@
             <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" autocomplete="new-password" required>
             @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
-        <div class="mb-4">
+        <div class="mb-3">
             <label class="form-label">Confirm password</label>
             <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Primary Base Currency</label>
+            <select name="currency_id" class="form-select @error('currency_id') is-invalid @enderror" required>
+                @foreach($currencies ?? [] as $curr)
+                    <option value="{{ $curr->id }}" {{ (old('currency_id') == $curr->id || $curr->code === 'PKR') ? 'selected' : '' }}>
+                        {{ $curr->code }} - {{ $curr->name }} ({{ $curr->symbol }})
+                    </option>
+                @endforeach
+            </select>
+            <div class="form-text text-secondary small">This will be your primary reporting currency across all accounts.</div>
+            @error('currency_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
         <button type="submit" class="btn btn-primary w-100 py-2">Create account</button>
     </form>

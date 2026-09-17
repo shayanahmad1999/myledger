@@ -199,20 +199,28 @@ class CommitteeService
 
                 $winner = CommitteeMember::find($winnerMemberId);
                 $winnerName = $winner ? $winner->name : 'Member';
+                $committee = $round->committee;
+
+                // Role-based payout calculation:
+                // If Manager/Organizer: Manager manages the whole pool and disburses the entire pot amount.
+                // If Member: Member only pays their own contribution amount towards the payout round.
+                $actualDeductionAmount = ($committee->my_role === 'manager') 
+                    ? (float) $round->payout_amount 
+                    : (float) $committee->contribution_amount;
 
                 $tx = $this->ledger->post(
                     $user,
                     TransactionType::CommitteePayout,
                     $payoutDate,
-                    (float) $round->payout_amount,
+                    $actualDeductionAmount,
                     [
-                        ['account' => $this->setup->systemAccount($user, 'opening_balance_equity'), 'debit' => $round->payout_amount],
-                        ['account' => $account, 'credit' => $round->payout_amount],
+                        ['account' => $this->setup->systemAccount($user, 'opening_balance_equity'), 'debit' => $actualDeductionAmount],
+                        ['account' => $account, 'credit' => $actualDeductionAmount],
                     ],
                     [
                         'source_account_id' => $account->id,
                         'person_id' => $winner?->person_id,
-                        'description' => "Committee payout disbursed: {$round->committee->name} (Round {$round->round_number} - Winner: {$winnerName})",
+                        'description' => "Committee payout disbursed: {$committee->name} (Round {$round->round_number} - Winner: {$winnerName})",
                     ]
                 );
 

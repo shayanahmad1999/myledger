@@ -12,12 +12,15 @@ use App\Models\UserSetting;
 
 class FinanceSetupService
 {
-    public function bootstrapUser(User $user): void
+    public function bootstrapUser(User $user, ?int $currencyId = null): void
     {
-        $currency = Currency::firstOrCreate(
-            ['code' => config('finance.base_currency', 'PKR')],
-            ['name' => 'Pakistani Rupee', 'symbol' => 'Rs', 'decimal_places' => 2, 'is_active' => true]
-        );
+        $currency = $currencyId ? Currency::find($currencyId) : null;
+        if (!$currency) {
+            $currency = Currency::firstOrCreate(
+                ['code' => config('finance.base_currency', 'PKR')],
+                ['name' => 'Pakistani Rupee', 'symbol' => 'Rs', 'decimal_places' => 2, 'is_active' => true]
+            );
+        }
 
         UserSetting::firstOrCreate(
             ['user_id' => $user->id],

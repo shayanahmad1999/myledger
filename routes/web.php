@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/loans', [LoanController::class, 'index']);
         Route::post('/loans', [LoanController::class, 'store']);
         Route::get('/loans/{loan}', [LoanController::class, 'show']);
+        Route::patch('/loans/{loan}', [LoanController::class, 'update']);
         Route::post('/loans/{loan}/repay', [LoanController::class, 'repay']);
 
         Route::get('/savings-goals', [SavingsGoalController::class, 'index']);
@@ -93,6 +94,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/calendar-events', CalendarController::class);
         Route::get('/search', GlobalSearchController::class);
         Route::get('/currencies', [CurrencyController::class, 'index']);
+        Route::post('/currencies', [CurrencyController::class, 'store']);
         Route::patch('/currencies/{currency}', [CurrencyController::class, 'update']);
 
         Route::prefix('reports')->group(function () {
