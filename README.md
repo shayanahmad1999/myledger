@@ -1,58 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MyLedger - Personal Finance Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive personal finance application built with Laravel 11, featuring double-entry bookkeeping, multi-currency support, and modern UI.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Core Finance
+- **Double-Entry Bookkeeping** - Immutable ledger with balanced transactions
+- **Multi-Currency Support** - Historical exchange rates with automatic base currency conversion
+- **Accounts Management** - Bank, cash, mobile wallet, savings, investment accounts
+- **Categories** - Hierarchical income/expense categories with budgets
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Transactions
+- **Income / Expense / Transfer** - Full CRUD with account filtering by currency
+- **Split Expenses** - Multiple categories in single transaction
+- **Opening Balance** - Set initial account balances with automatic equity entry
+- **Exchange Transactions** - Currency conversion between accounts with rate tracking
+- **Reversals** - Immutable audit trail with reversal support
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Loan Management
+- **Given/Taken Loans** - Track money lent and borrowed
+- **Repayment Tracking** - Principal + interest with automatic outstanding calculation
+- **Interest Types** - Simple, fixed, or none
+- **Receipts** - Printable/shareable loan and repayment receipts
 
-## Learning Laravel
+### Committees (ROSCA)
+- **Rotating Savings Pools** - Member slots, turn schedules, contributions
+- **Round Management** - Collection tracking, payout disbursement
+- **Payment Recording** - Member contributions with ledger integration
+- **Receipts** - Contribution and payout receipts
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Savings Goals
+- **Goal Tracking** - Target amounts, deadlines, progress visualization
+- **Move Funds** - Transfer between accounts and goals
+- **Progress Reports** - Visual progress bars and statistics
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Reports
+- **General Ledger** - Full transaction history with running balances
+- **Party Ledger** - Per-person transaction history
+- **Income/Expense Report** - Category breakdown with budgets
+- **Cash Flow** - Inflow/outflow analysis
+- **Net Worth** - Account balances over time
+- **Multi-Currency View** - Dynamic currency selector with exchange rate conversion (persisted in localStorage)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Settings
+- **Currency Management** - Add/edit currencies with exchange rates
+- **Exchange Rate History** - Historical rates per currency per date (modal UI)
+- **Base Currency** - User preference with automatic defaulting
+- **Categories & Budgets** - Full category management with monthly budgets
 
-## Agentic Development
+## Tech Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- **Backend**: Laravel 11, PHP 8.2+
+- **Database**: MySQL/PostgreSQL (double-entry schema)
+- **Frontend**: Bootstrap 5, Vanilla JS (MyLedger.js module)
+- **Architecture**: Service layer (LedgerService), Enum-based types, Repository patterns
+
+## Installation
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repo>
+cd myledger
+composer install
+npm install && npm run build
+cp .env.example .env
+# Configure DB, APP_URL, etc.
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Key Architecture
 
-## Contributing
+### LedgerService (`app/Services/LedgerService.php`)
+Central transaction processor enforcing double-entry rules:
+- `post()` - Core balanced transaction creation with multi-currency conversion
+- `expense()` / `income()` / `transfer()` / `exchange()` / `openingBalance()` / `loanGiven()` / `loanRepayment()` / `reversal()`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Exchange Rate System
+- `exchange_rate_history` table - Historical rates (currency_id, rate_date, rate)
+- `ExchangeRateHistory::getRate($from, $to, $date)` - Retrieves rate for date (falls back to current)
+- `CurrencyController` - AJAX endpoints for history CRUD
+- Automatic base currency conversion in `LedgerService::post()`
 
-## Code of Conduct
+### Currency Handling
+- Base currency from `users.settings.base_currency_id`
+- Page-level `data-base-currency-id` attribute read by JS
+- All currency dropdowns default to base currency
+- Reports: dynamic selector with localStorage persistence (`reportCurrencyId`)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Frontend (MyLedger.js)
+- `M.request()` - Authenticated AJAX with CSRF
+- `M.money(amount, symbol)` - Currency formatting
+- `M.fillSelect()` - Dropdown population with label/placeholder/selected
+- `M.renderCurrencyRateNotice()` - Live exchange rate display
+- `M.getCurrencies()` - Cached currency list for rate notice
 
-## Security Vulnerabilities
+## Database Schema Highlights
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- `ledger_accounts` - Chart of accounts (system + user, typed by kind/type)
+- `financial_transactions` - Immutable transaction headers (type, amount, currency, exchange_rate, original_amount)
+- `transaction_entries` - Double-entry lines (ledger_account_id, debit, credit)
+- `exchange_rate_history` - Historical rates per currency per date
+- `loans`, `loan_payments` - Loan tracking
+- `committees`, `committee_members`, `committee_rounds`, `committee_payments` - ROSCA
+- `savings_goals`, `savings_goal_moves` - Goal tracking
+- `categories` - Hierarchical with budget_amount
+
+## Testing
+
+```bash
+php artisan test
+# 8 passing tests (LedgerService, Web Finance)
+# 1 pre-existing unrelated failure (ExampleTest root route)
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License
