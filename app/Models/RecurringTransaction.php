@@ -21,4 +21,6 @@ class RecurringTransaction extends Model
         ];
     }
     public function scopeForUser(Builder $q, int $userId): Builder { return $q->where('user_id', $userId); }
+
+    public function currency(){ return $this->belongsTo(Currency::class); }
 }

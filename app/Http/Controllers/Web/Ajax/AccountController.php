@@ -16,7 +16,7 @@ class AccountController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $items=LedgerAccount::forUser($request->user()->id)->moneyAccounts()->when(!$request->boolean('include_archived'),fn($q)=>$q->where('is_archived',false))->get()->map(fn($a)=>array_merge($a->toArray(),['balance'=>round($a->balance(),2)]));
+        $items=LedgerAccount::forUser($request->user()->id)->with('currency')->moneyAccounts()->when(!$request->boolean('include_archived'),fn($q)=>$q->where('is_archived',false))->get()->map(fn($a)=>array_merge($a->toArray(),['balance'=>round($a->balance(),2)]));
         return response()->json($items);
     }
     public function store(Request $request, LedgerService $ledger): JsonResponse

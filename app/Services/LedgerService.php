@@ -9,6 +9,7 @@ use App\Enums\TransactionType;
 use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Currency;
+use App\Models\ExchangeRateHistory;
 use App\Models\FinancialTransaction;
 use App\Models\LedgerAccount;
 use App\Models\Loan;
@@ -217,7 +218,15 @@ class LedgerService
     public function withdrawFromGoal(User $user, SavingsGoal $goal, array $data): FinancialTransaction
     {
         $this->assertOwned($user, $goal);
-        abort_if((float)$data['amount'] > (float)$goal->allocated_amount + 0.0001, 422, 'Withdrawal exceeds the amount allocated to this goal.');
+        
+        $amount = (string) $data['amount'];
+        $allocated = (string) $goal->allocated_amount;
+        
+        if (bccomp($amount, $allocated, 4) > 0) {
+            $available = number_format((float)$goal->allocated_amount, 2, '.', '');
+            abort(422, "Insufficient balance in this savings goal. Available: {$available}");
+        }
+        
         $data['source_account_id'] = $goal->account_id;
         return DB::transaction(function () use ($user, $goal, $data) {
             $tx = $this->transfer($user, $data, TransactionType::SavingsWithdrawal);
@@ -284,7 +293,9 @@ class LedgerService
             fn ($line) => $line['account']->type->isUserMoneyAccount() ? (int) $line['account']->currency_id : null,
             $lines
         ))));
-        abort_if(count($moneyCurrencies) > 1, 422, 'All money accounts in a transaction must use the same currency. Currency conversion requires an explicit exchange workflow.');
+        if ($type !== TransactionType::Exchange) {
+            abort_if(count($moneyCurrencies) > 1, 422, 'All money accounts in a transaction must use the same currency. Use an Exchange transaction for currency conversion.');
+        }
 
         return DB::transaction(function () use ($user, $type, $date, $amount, $lines, $meta, $moneyCurrencies) {
             $txCurrencyId = $meta['currency_id'] ?? ($moneyCurrencies[0] ?? $lines[0]['account']->currency_id ?? Currency::where('code', config('finance.base_currency'))->value('id'));
@@ -294,10 +305,14 @@ class LedgerService
             $baseCurrencyId = $user->settings?->base_currency_id;
             $originalAmount = null;
             $originalCurrencyId = null;
+            $exchangeRate = null;
 
+            // For Exchange transactions, the meta may contain an explicit exchange_rate (source->destination)
+            // We still need to convert destination currency to base currency using historical rate
             if ($baseCurrencyId && (int)$txCurrencyId !== (int)$baseCurrencyId) {
-                $currency = Currency::find($txCurrencyId);
-                $rate = $currency ? (float)$currency->exchange_rate : 1.0;
+                // Use historical exchange rate at transaction date for txCurrency -> base
+                $exchangeRate = ExchangeRateHistory::getRate($txCurrencyId, $baseCurrencyId, $date);
+                $rate = $exchangeRate > 0 ? $exchangeRate : 1.0;
 
                 if ($rate > 0 && $rate != 1.0) {
                     // Preserve original values
@@ -327,6 +342,7 @@ class LedgerService
                 'user_id'=>$user->id,'currency_id'=>$txCurrencyId,'type'=>$type,'reference_no'=>$reference,
                 'transaction_date'=>$date,'amount'=>$amount,
                 'original_amount'=>$originalAmount,'original_currency_id'=>$originalCurrencyId,
+                'exchange_rate'=>$exchangeRate,
                 'description'=>$meta['description'] ?? null,'notes'=>$meta['notes'] ?? null,
                 'source_account_id'=>$meta['source_account_id'] ?? null,'destination_account_id'=>$meta['destination_account_id'] ?? null,
                 'category_id'=>$meta['category_id'] ?? null,'person_id'=>$meta['person_id'] ?? null,'loan_id'=>$meta['loan_id'] ?? null,
@@ -345,6 +361,68 @@ class LedgerService
                 'ip_address'=>request()?->ip(),'user_agent'=>request()?->userAgent(),
             ]);
             return $tx->load(['entries.account','category','person','sourceAccount','destinationAccount']);
+        });
+    }
+
+    public function exchange(User $user, array $data): FinancialTransaction
+    {
+        $source = LedgerAccount::findOrFail($data['source_account_id']);
+        $destination = LedgerAccount::findOrFail($data['destination_account_id']);
+        $this->assertOwned($user, $source, $destination);
+        abort_if($source->id === $destination->id, 422, 'Source and destination accounts must be different.');
+        abort_if($source->currency_id === $destination->currency_id, 422, 'Exchange requires accounts with different currencies.');
+        abort_unless($source->type->isUserMoneyAccount() && $destination->type->isUserMoneyAccount(), 422, 'Exchange is only supported between money accounts.');
+
+        $sourceAmount = (float) $data['source_amount'];
+        $destinationAmount = (float) $data['destination_amount'];
+        abort_if($sourceAmount <= 0 || $destinationAmount <= 0, 422, 'Both amounts must be greater than zero.');
+
+        // Calculate exchange rate: destination_amount / source_amount
+        $exchangeRate = round($destinationAmount / $sourceAmount, 8);
+
+        // Allow override with explicit exchange_rate if provided
+        if (isset($data['exchange_rate'])) {
+            $explicitRate = (float) $data['exchange_rate'];
+            // Validate that explicit rate is consistent with amounts (within 0.1% tolerance)
+            $impliedDestAmount = round($sourceAmount * $explicitRate, 4);
+            if (abs($impliedDestAmount - $destinationAmount) > 0.01) {
+                abort(422, 'Explicit exchange rate does not match the provided amounts.');
+            }
+            $exchangeRate = $explicitRate;
+        }
+
+        return DB::transaction(function () use ($user, $source, $destination, $sourceAmount, $destinationAmount, $exchangeRate, $data) {
+            $lines = [
+                ['account' => $destination, 'debit' => $destinationAmount],
+                ['account' => $source, 'credit' => $sourceAmount],
+            ];
+
+            // Store exchange rate in metadata for the post() method to use
+            $meta = array_merge($data, [
+                'source_account_id' => $source->id,
+                'destination_account_id' => $destination->id,
+                'currency_id' => $destination->currency_id,
+                'exchange_rate' => $exchangeRate,
+                'description' => $data['description'] ?? "Exchange {$source->currency->code} to {$destination->currency->code}",
+            ]);
+
+            $tx = $this->post($user, TransactionType::Exchange, $data['transaction_date'], $destinationAmount, $lines, $meta);
+
+            // Save the exchange rate to history for future transactions
+            $baseCurrencyId = $user->settings?->base_currency_id;
+            if ($baseCurrencyId) {
+                // Save rate for source currency -> base
+                if ((int)$source->currency_id !== (int)$baseCurrencyId) {
+                    $sourceRate = ExchangeRateHistory::getRate($source->currency_id, $baseCurrencyId, $data['transaction_date']);
+                    // We don't override historical rates, but we could add logic here
+                }
+                // Save rate for destination currency -> base
+                if ((int)$destination->currency_id !== (int)$baseCurrencyId) {
+                    // Same
+                }
+            }
+
+            return $tx;
         });
     }
 

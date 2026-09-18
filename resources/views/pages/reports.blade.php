@@ -27,9 +27,13 @@
             <label class="form-label">To</label>
             <input class="form-control" id="reportTo" type="date">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <label class="form-label">Currency</label>
+            <select class="form-select" id="reportCurrency"></select>
+        </div>
+        <div class="col-md-1">
             <button class="btn btn-primary w-100" id="runReport">
-                <i class="bi bi-arrow-clockwise me-2"></i>Update report
+                <i class="bi bi-arrow-clockwise me-2"></i>Update
             </button>
         </div>
     </div>
@@ -39,25 +43,25 @@
     <div class="col-6 col-xl-3">
         <div class="surface-card stat-card">
             <div class="stat-label">Income</div>
-            <div class="stat-value text-success" id="reportIncome">Rs 0</div>
+            <div class="stat-value text-success" id="reportIncome">{{ auth()->user()->settings->currency->symbol }} 0</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
         <div class="surface-card stat-card">
             <div class="stat-label">Expenses</div>
-            <div class="stat-value text-danger" id="reportExpense">Rs 0</div>
+            <div class="stat-value text-danger" id="reportExpense">{{ auth()->user()->settings->currency->symbol }} 0</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
         <div class="surface-card stat-card">
             <div class="stat-label">Surplus</div>
-            <div class="stat-value" id="reportNet">Rs 0</div>
+            <div class="stat-value" id="reportNet">{{ auth()->user()->settings->currency->symbol }} 0</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
         <div class="surface-card stat-card">
             <div class="stat-label">Net worth</div>
-            <div class="stat-value" id="reportNetWorth">Rs 0</div>
+            <div class="stat-value" id="reportNetWorth">{{ auth()->user()->settings->currency->symbol }} 0</div>
         </div>
     </div>
 </div>
@@ -190,8 +194,8 @@
                                 <tfoot class="table-light fw-bold">
                                     <tr>
                                         <td colspan="2">Total Ledger Balance</td>
-                                        <td class="text-end" id="tbTotalDebit">Rs 0</td>
-                                        <td class="text-end" id="tbTotalCredit">Rs 0</td>
+                                        <td class="text-end" id="tbTotalDebit">{{ auth()->user()->settings->currency->symbol }} 0</td>
+                                        <td class="text-end" id="tbTotalCredit">{{ auth()->user()->settings->currency->symbol }} 0</td>
                                         <td class="text-end" id="tbNetEquilibrium">—</td>
                                     </tr>
                                 </tfoot>
@@ -305,19 +309,19 @@
                             <div class="col-sm-6 col-md-3">
                                 <div class="bg-light p-3 rounded">
                                     <div class="small text-secondary">Active Monthly Contribution</div>
-                                    <div class="h5 mb-0 fw-bold text-primary" id="commReportMonthly">Rs 0</div>
+                                    <div class="h5 mb-0 fw-bold text-primary" id="commReportMonthly">{{ auth()->user()->settings->currency->symbol }} 0</div>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3">
                                 <div class="bg-light p-3 rounded">
                                     <div class="small text-secondary">Total Collected</div>
-                                    <div class="h5 mb-0 fw-bold text-success" id="commReportCollected">Rs 0</div>
+                                    <div class="h5 mb-0 fw-bold text-success" id="commReportCollected">{{ auth()->user()->settings->currency->symbol }} 0</div>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3">
                                 <div class="bg-light p-3 rounded">
                                     <div class="small text-secondary">Total Disbursed</div>
-                                    <div class="h5 mb-0 fw-bold text-info" id="commReportDisbursed">Rs 0</div>
+                                    <div class="h5 mb-0 fw-bold text-info" id="commReportDisbursed">{{ auth()->user()->settings->currency->symbol }} 0</div>
                                 </div>
                             </div>
                         </div>
@@ -419,7 +423,7 @@
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-header bg-success text-white fw-bold d-flex justify-content-between">
                             <span>ASSETS</span>
-                            <span>${M.money(bs.totals.assets)}</span>
+                            <span>${formatMoney(bs.totals.assets)}</span>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-sm table-hover align-middle mb-0">
@@ -435,18 +439,18 @@
                                     ${bs.assets.map(a => `
                                         <tr>
                                             <td class="fw-semibold">${M.esc(a.name)}</td>
-                                            <td class="text-end fw-bold">${M.money(a.current_balance)}</td>
-                                            <td class="text-end text-secondary">${M.money(a.prior_balance)}</td>
-                                            <td class="text-end ${a.change >= 0 ? 'text-success' : 'text-danger'}">${a.change >= 0 ? '+' : ''}${M.money(a.change)}</td>
+                                            <td class="text-end fw-bold">${formatMoney(a.current_balance)}</td>
+                                            <td class="text-end text-secondary">${formatMoney(a.prior_balance)}</td>
+                                            <td class="text-end ${a.change >= 0 ? 'text-success' : 'text-danger'}">${a.change >= 0 ? '+' : ''}${formatMoney(a.change)}</td>
                                         </tr>
                                     `).join('') || '<tr><td colspan="4" class="text-center text-secondary py-2">No asset accounts found</td></tr>'}
                                 </tbody>
                                 <tfoot class="table-light fw-bold">
                                     <tr>
                                         <td>Total Assets</td>
-                                        <td class="text-end text-success">${M.money(bs.totals.assets)}</td>
-                                        <td class="text-end text-secondary">${M.money(bs.totals.prior_assets)}</td>
-                                        <td class="text-end">${M.money(bs.totals.assets - bs.totals.prior_assets)}</td>
+                                        <td class="text-end text-success">${formatMoney(bs.totals.assets)}</td>
+                                        <td class="text-end text-secondary">${formatMoney(bs.totals.prior_assets)}</td>
+                                        <td class="text-end">${formatMoney(bs.totals.assets - bs.totals.prior_assets)}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -458,7 +462,7 @@
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between">
                             <span>LIABILITIES & EQUITY</span>
-                            <span>${M.money(bs.totals.liabilities_plus_equity)}</span>
+                            <span>${formatMoney(bs.totals.liabilities_plus_equity)}</span>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-sm table-hover align-middle mb-0">
@@ -475,46 +479,46 @@
                                     ${bs.liabilities.map(l => `
                                         <tr>
                                             <td class="fw-semibold ps-3">${M.esc(l.name)}</td>
-                                            <td class="text-end fw-bold text-danger">${M.money(l.current_balance)}</td>
-                                            <td class="text-end text-secondary">${M.money(l.prior_balance)}</td>
-                                            <td class="text-end">${l.change >= 0 ? '+' : ''}${M.money(l.change)}</td>
+                                            <td class="text-end fw-bold text-danger">${formatMoney(l.current_balance)}</td>
+                                            <td class="text-end text-secondary">${formatMoney(l.prior_balance)}</td>
+                                            <td class="text-end">${l.change >= 0 ? '+' : ''}${formatMoney(l.change)}</td>
                                         </tr>
                                     `).join('')}
                                     <tr class="fw-bold border-bottom">
                                         <td class="ps-3">Subtotal Liabilities</td>
-                                        <td class="text-end text-danger">${M.money(bs.totals.liabilities)}</td>
-                                        <td class="text-end">${M.money(bs.totals.prior_liabilities)}</td>
-                                        <td class="text-end">${M.money(bs.totals.liabilities - bs.totals.prior_liabilities)}</td>
+                                        <td class="text-end text-danger">${formatMoney(bs.totals.liabilities)}</td>
+                                        <td class="text-end">${formatMoney(bs.totals.prior_liabilities)}</td>
+                                        <td class="text-end">${formatMoney(bs.totals.liabilities - bs.totals.prior_liabilities)}</td>
                                     </tr>
 
                                     <tr class="table-secondary fw-bold"><td colspan="4">Equity</td></tr>
                                     ${bs.equity_accounts.map(e => `
                                         <tr>
                                             <td class="fw-semibold ps-3">${M.esc(e.name)}</td>
-                                            <td class="text-end fw-bold">${M.money(e.current_balance)}</td>
-                                            <td class="text-end text-secondary">${M.money(e.prior_balance)}</td>
-                                            <td class="text-end">${e.change >= 0 ? '+' : ''}${M.money(e.change)}</td>
+                                            <td class="text-end fw-bold">${formatMoney(e.current_balance)}</td>
+                                            <td class="text-end text-secondary">${formatMoney(e.prior_balance)}</td>
+                                            <td class="text-end">${e.change >= 0 ? '+' : ''}${formatMoney(e.change)}</td>
                                         </tr>
                                     `).join('')}
                                     <tr>
                                         <td class="fw-semibold ps-3">Retained Earnings (Accumulated Surplus)</td>
-                                        <td class="text-end fw-bold text-primary">${M.money(bs.retained_earnings.current)}</td>
-                                        <td class="text-end text-secondary">${M.money(bs.retained_earnings.prior)}</td>
-                                        <td class="text-end ${bs.retained_earnings.change >= 0 ? 'text-success' : 'text-danger'}">${bs.retained_earnings.change >= 0 ? '+' : ''}${M.money(bs.retained_earnings.change)}</td>
+                                        <td class="text-end fw-bold text-primary">${formatMoney(bs.retained_earnings.current)}</td>
+                                        <td class="text-end text-secondary">${formatMoney(bs.retained_earnings.prior)}</td>
+                                        <td class="text-end ${bs.retained_earnings.change >= 0 ? 'text-success' : 'text-danger'}">${bs.retained_earnings.change >= 0 ? '+' : ''}${formatMoney(bs.retained_earnings.change)}</td>
                                     </tr>
                                     <tr class="fw-bold border-bottom">
                                         <td class="ps-3">Subtotal Equity</td>
-                                        <td class="text-end text-primary">${M.money(bs.totals.equity)}</td>
-                                        <td class="text-end">${M.money(bs.totals.prior_equity)}</td>
-                                        <td class="text-end">${M.money(bs.totals.equity - bs.totals.prior_equity)}</td>
+                                        <td class="text-end text-primary">${formatMoney(bs.totals.equity)}</td>
+                                        <td class="text-end">${formatMoney(bs.totals.prior_equity)}</td>
+                                        <td class="text-end">${formatMoney(bs.totals.equity - bs.totals.prior_equity)}</td>
                                     </tr>
                                 </tbody>
                                 <tfoot class="table-light fw-bold">
                                     <tr>
                                         <td>Total Liabilities & Equity</td>
-                                        <td class="text-end text-dark">${M.money(bs.totals.liabilities_plus_equity)}</td>
-                                        <td class="text-end text-secondary">${M.money(bs.totals.prior_liabilities + bs.totals.prior_equity)}</td>
-                                        <td class="text-end">${M.money(bs.totals.liabilities_plus_equity - (bs.totals.prior_liabilities + bs.totals.prior_equity))}</td>
+                                        <td class="text-end text-dark">${formatMoney(bs.totals.liabilities_plus_equity)}</td>
+                                        <td class="text-end text-secondary">${formatMoney(bs.totals.prior_liabilities + bs.totals.prior_equity)}</td>
+                                        <td class="text-end">${formatMoney(bs.totals.liabilities_plus_equity - (bs.totals.prior_liabilities + bs.totals.prior_equity))}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -534,21 +538,21 @@
                     <div class="col-md-4">
                         <div class="surface-card p-3 text-center border-start border-4 border-success">
                             <div class="small text-secondary">Total Operating Income</div>
-                            <div class="h4 mb-0 text-success fw-bold mt-1">${M.money(pnl.totals.current_income)}</div>
-                            <div class="small text-secondary mt-1">Prior period: ${M.money(pnl.totals.prior_income)}</div>
+                            <div class="h4 mb-0 text-success fw-bold mt-1">${formatMoney(pnl.totals.current_income)}</div>
+                            <div class="small text-secondary mt-1">Prior period: ${formatMoney(pnl.totals.prior_income)}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="surface-card p-3 text-center border-start border-4 border-danger">
                             <div class="small text-secondary">Total Operating Expenses</div>
-                            <div class="h4 mb-0 text-danger fw-bold mt-1">${M.money(pnl.totals.current_expense)}</div>
-                            <div class="small text-secondary mt-1">Prior period: ${M.money(pnl.totals.prior_expense)}</div>
+                            <div class="h4 mb-0 text-danger fw-bold mt-1">${formatMoney(pnl.totals.current_expense)}</div>
+                            <div class="small text-secondary mt-1">Prior period: ${formatMoney(pnl.totals.prior_expense)}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="surface-card p-3 text-center border-start border-4 border-primary">
                             <div class="small text-secondary">Net Operating Profit & Margin</div>
-                            <div class="h4 mb-0 text-primary fw-bold mt-1">${M.money(pnl.totals.current_net)}</div>
+                            <div class="h4 mb-0 text-primary fw-bold mt-1">${formatMoney(pnl.totals.current_net)}</div>
                             <div class="small fw-semibold mt-1 ${pnl.totals.net_margin_percent >= 0 ? 'text-success' : 'text-danger'}">
                                 Net Margin: ${pnl.totals.net_margin_percent}%
                             </div>
@@ -572,9 +576,9 @@
                             ${pnl.income.map(i => `
                                 <tr>
                                     <td class="fw-semibold ps-3">${M.esc(i.name)}</td>
-                                    <td class="text-end fw-bold text-success">${M.money(i.current)}</td>
-                                    <td class="text-end text-secondary">${M.money(i.prior)}</td>
-                                    <td class="text-end ${i.change >= 0 ? 'text-success' : 'text-danger'}">${i.change >= 0 ? '+' : ''}${M.money(i.change)}</td>
+                                    <td class="text-end fw-bold text-success">${formatMoney(i.current)}</td>
+                                    <td class="text-end text-secondary">${formatMoney(i.prior)}</td>
+                                    <td class="text-end ${i.change >= 0 ? 'text-success' : 'text-danger'}">${i.change >= 0 ? '+' : ''}${formatMoney(i.change)}</td>
                                     <td class="text-end"><span class="badge ${i.change_percent >= 0 ? 'bg-success' : 'bg-danger'}">${i.change_percent >= 0 ? '+' : ''}${i.change_percent}%</span></td>
                                 </tr>
                             `).join('') || '<tr><td colspan="5" class="text-center text-secondary py-2 ps-3">No income records</td></tr>'}
@@ -583,9 +587,9 @@
                             ${pnl.expense.map(e => `
                                 <tr>
                                     <td class="fw-semibold ps-3">${M.esc(e.name)}</td>
-                                    <td class="text-end fw-bold text-danger">${M.money(e.current)}</td>
-                                    <td class="text-end text-secondary">${M.money(e.prior)}</td>
-                                    <td class="text-end ${e.change <= 0 ? 'text-success' : 'text-danger'}">${e.change >= 0 ? '+' : ''}${M.money(e.change)}</td>
+                                    <td class="text-end fw-bold text-danger">${formatMoney(e.current)}</td>
+                                    <td class="text-end text-secondary">${formatMoney(e.prior)}</td>
+                                    <td class="text-end ${e.change <= 0 ? 'text-success' : 'text-danger'}">${e.change >= 0 ? '+' : ''}${formatMoney(e.change)}</td>
                                     <td class="text-end"><span class="badge ${e.change_percent <= 0 ? 'bg-success' : 'bg-danger'}">${e.change_percent >= 0 ? '+' : ''}${e.change_percent}%</span></td>
                                 </tr>
                             `).join('') || '<tr><td colspan="5" class="text-center text-secondary py-2 ps-3">No expense records</td></tr>'}
@@ -593,9 +597,9 @@
                         <tfoot class="table-light fw-bold fs-6">
                             <tr>
                                 <td>NET PROFIT / SURPLUS</td>
-                                <td class="text-end text-primary">${M.money(pnl.totals.current_net)}</td>
-                                <td class="text-end text-secondary">${M.money(pnl.totals.prior_net)}</td>
-                                <td class="text-end ${pnl.totals.net_change >= 0 ? 'text-success' : 'text-danger'}">${pnl.totals.net_change >= 0 ? '+' : ''}${M.money(pnl.totals.net_change)}</td>
+                                <td class="text-end text-primary">${formatMoney(pnl.totals.current_net)}</td>
+                                <td class="text-end text-secondary">${formatMoney(pnl.totals.prior_net)}</td>
+                                <td class="text-end ${pnl.totals.net_change >= 0 ? 'text-success' : 'text-danger'}">${pnl.totals.net_change >= 0 ? '+' : ''}${formatMoney(pnl.totals.net_change)}</td>
                                 <td class="text-end"><span class="badge bg-primary">Margin ${pnl.totals.net_margin_percent}%</span></td>
                             </tr>
                         </tfoot>
@@ -623,7 +627,7 @@
                     </div>
                     <div class="text-end">
                         <div class="small text-secondary">Net Closing Balance</div>
-                        <div class="h4 mb-0 fw-bold ${pl.closing_balance >= 0 ? 'text-success' : 'text-danger'}">${M.money(pl.closing_balance)}</div>
+                        <div class="h4 mb-0 fw-bold ${pl.closing_balance >= 0 ? 'text-success' : 'text-danger'}">${formatMoney(pl.closing_balance)}</div>
                     </div>
                 </div>
 
@@ -643,7 +647,7 @@
                         <tbody>
                             <tr class="table-light fw-bold">
                                 <td colspan="6">Opening Balance (as of ${M.date(from.value)})</td>
-                                <td class="text-end">${M.money(pl.opening_balance)}</td>
+                                <td class="text-end">${formatMoney(pl.opening_balance)}</td>
                             </tr>
                             ${pl.entries.map(e => `
                                 <tr>
@@ -651,18 +655,18 @@
                                     <td class="font-monospace small">${M.esc(e.reference_no)}</td>
                                     <td><span class="badge bg-secondary-subtle text-dark text-capitalize">${e.type.replace('_',' ')}</span></td>
                                     <td>${M.esc(e.description)}</td>
-                                    <td class="text-end text-danger fw-semibold">${e.debit > 0 ? M.money(e.debit) : '—'}</td>
-                                    <td class="text-end text-success fw-semibold">${e.credit > 0 ? M.money(e.credit) : '—'}</td>
-                                    <td class="text-end fw-bold">${M.money(e.running_balance)}</td>
+                                    <td class="text-end text-danger fw-semibold">${e.debit > 0 ? formatMoneyWithOriginal(e.debit, e) : '—'}</td>
+                                    <td class="text-end text-success fw-semibold">${e.credit > 0 ? formatMoneyWithOriginal(e.credit, e) : '—'}</td>
+                                    <td class="text-end fw-bold">${formatMoney(e.running_balance)}</td>
                                 </tr>
                             `).join('') || '<tr><td colspan="7" class="text-center text-secondary py-3">No transaction activity during this period.</td></tr>'}
                         </tbody>
                         <tfoot class="table-light fw-bold">
                             <tr>
                                 <td colspan="4">Total Period Activity</td>
-                                <td class="text-end text-danger">${M.money(pl.total_debit)}</td>
-                                <td class="text-end text-success">${M.money(pl.total_credit)}</td>
-                                <td class="text-end text-primary">${M.money(pl.closing_balance)}</td>
+                                <td class="text-end text-danger">${formatMoney(pl.total_debit)}</td>
+                                <td class="text-end text-success">${formatMoney(pl.total_credit)}</td>
+                                <td class="text-end text-primary">${formatMoney(pl.closing_balance)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -686,21 +690,21 @@
                     <div class="col-md-4">
                         <div class="surface-card p-3 border-start border-4 border-success">
                             <div class="small text-secondary">${comp.year} Total Revenue</div>
-                            <div class="h4 mb-1 text-success fw-bold">${M.money(comp.totals.year_income)}</div>
+                            <div class="h4 mb-1 text-success fw-bold">${formatMoney(comp.totals.year_income)}</div>
                             <div class="small">Growth vs ${comp.prior_year}: <span class="badge ${comp.totals.income_growth_percent >= 0 ? 'bg-success' : 'bg-danger'}">${comp.totals.income_growth_percent >= 0 ? '+' : ''}${comp.totals.income_growth_percent}%</span></div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="surface-card p-3 border-start border-4 border-danger">
                             <div class="small text-secondary">${comp.year} Total Expenditure</div>
-                            <div class="h4 mb-1 text-danger fw-bold">${M.money(comp.totals.year_expense)}</div>
+                            <div class="h4 mb-1 text-danger fw-bold">${formatMoney(comp.totals.year_expense)}</div>
                             <div class="small">Growth vs ${comp.prior_year}: <span class="badge ${comp.totals.expense_growth_percent <= 0 ? 'bg-success' : 'bg-danger'}">${comp.totals.expense_growth_percent >= 0 ? '+' : ''}${comp.totals.expense_growth_percent}%</span></div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="surface-card p-3 border-start border-4 border-primary">
                             <div class="small text-secondary">${comp.year} Net Savings</div>
-                            <div class="h4 mb-1 text-primary fw-bold">${M.money(comp.totals.year_net)}</div>
+                            <div class="h4 mb-1 text-primary fw-bold">${formatMoney(comp.totals.year_net)}</div>
                             <div class="small">Growth vs ${comp.prior_year}: <span class="badge ${comp.totals.net_growth_percent >= 0 ? 'bg-success' : 'bg-danger'}">${comp.totals.net_growth_percent >= 0 ? '+' : ''}${comp.totals.net_growth_percent}%</span></div>
                         </div>
                     </div>
@@ -725,15 +729,15 @@
                             ${comp.months.map(m => `
                                 <tr>
                                     <td class="fw-bold">${m.month_name} ${comp.year}</td>
-                                    <td class="text-end text-success fw-semibold">${M.money(m.income)}</td>
-                                    <td class="text-end text-secondary">${M.money(m.prior_income)}</td>
+                                    <td class="text-end text-success fw-semibold">${formatMoney(m.income)}</td>
+                                    <td class="text-end text-secondary">${formatMoney(m.prior_income)}</td>
                                     <td class="text-end"><span class="badge ${m.income_growth >= 0 ? 'bg-success' : 'bg-secondary'}">${m.income_growth >= 0 ? '+' : ''}${m.income_growth}%</span></td>
                                     
-                                    <td class="text-end text-danger fw-semibold">${M.money(m.expense)}</td>
-                                    <td class="text-end text-secondary">${M.money(m.prior_expense)}</td>
+                                    <td class="text-end text-danger fw-semibold">${formatMoney(m.expense)}</td>
+                                    <td class="text-end text-secondary">${formatMoney(m.prior_expense)}</td>
                                     <td class="text-end"><span class="badge ${m.expense_growth <= 0 ? 'bg-success' : 'bg-danger'}">${m.expense_growth >= 0 ? '+' : ''}${m.expense_growth}%</span></td>
                                     
-                                    <td class="text-end fw-bold">${M.money(m.net)}</td>
+                                    <td class="text-end fw-bold">${formatMoney(m.net)}</td>
                                     <td class="text-end"><span class="badge bg-info text-dark">${m.savings_rate}%</span></td>
                                 </tr>
                             `).join('')}
@@ -757,14 +761,14 @@
                     <div class="col-md-3">
                         <div class="surface-card p-3 border-start border-4 border-warning">
                             <div class="small text-secondary">Daily Average Burn Rate</div>
-                            <div class="h3 mb-0 text-warning fw-bold mt-1">${M.money(br.daily_average_burn)} / day</div>
+                            <div class="h3 mb-0 text-warning fw-bold mt-1">${formatMoney(br.daily_average_burn)} / day</div>
                             <div class="small text-secondary mt-1">Based on ${br.days_count} days in period</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="surface-card p-3 border-start border-4 border-info">
                             <div class="small text-secondary">Liquid Assets Available</div>
-                            <div class="h3 mb-0 text-info fw-bold mt-1">${M.money(br.liquid_assets)}</div>
+                            <div class="h3 mb-0 text-info fw-bold mt-1">${formatMoney(br.liquid_assets)}</div>
                             <div class="small text-secondary mt-1">Cash, Bank & Wallet funds</div>
                         </div>
                     </div>
@@ -778,7 +782,7 @@
                     <div class="col-md-3">
                         <div class="surface-card p-3 border-start border-4 border-danger">
                             <div class="small text-secondary">Total Burned in Period</div>
-                            <div class="h3 mb-0 text-danger fw-bold mt-1">${M.money(br.total_expense)}</div>
+                            <div class="h3 mb-0 text-danger fw-bold mt-1">${formatMoney(br.total_expense)}</div>
                         </div>
                     </div>
                 </div>
@@ -800,7 +804,7 @@
                                         ${br.peak_spending_days.map(pd => `
                                             <tr>
                                                 <td class="fw-semibold">${M.date(pd.date)}</td>
-                                                <td class="text-end text-danger fw-bold">${M.money(pd.total)}</td>
+                                                <td class="text-end text-danger fw-bold">${formatMoney(pd.total)}</td>
                                                 <td class="text-end"><span class="badge bg-danger">${br.daily_average_burn > 0 ? round(pd.total / br.daily_average_burn, 1) : 1}x</span></td>
                                             </tr>
                                         `).join('') || '<tr><td colspan="3" class="text-center text-secondary py-3">No spending days recorded</td></tr>'}
@@ -826,7 +830,7 @@
                                         ${br.category_breakdown.map(cat => `
                                             <tr>
                                                 <td class="fw-semibold">${M.esc(cat.name)}</td>
-                                                <td class="text-end fw-bold">${M.money(cat.total)}</td>
+                                                <td class="text-end fw-bold">${formatMoney(cat.total)}</td>
                                                 <td class="text-end">
                                                     <div class="d-flex align-items-center justify-content-end gap-2">
                                                         <div class="progress" style="width: 60px; height: 6px;">
@@ -879,17 +883,17 @@
             document.querySelector('#tbStatusBadge').className = tb.is_balanced ? 'badge bg-success' : 'badge bg-danger';
             document.querySelector('#tbStatusBadge').textContent = tb.is_balanced ? 'Balanced (Equilibrium Verified)' : 'Unbalanced';
 
-            document.querySelector('#tbTotalDebit').textContent = M.money(tb.total_debit);
-            document.querySelector('#tbTotalCredit').textContent = M.money(tb.total_credit);
+            document.querySelector('#tbTotalDebit').textContent = formatMoney(tb.total_debit);
+            document.querySelector('#tbTotalCredit').textContent = formatMoney(tb.total_credit);
 
             const tbody = document.querySelector('#trialBalanceTableBody');
             tbody.innerHTML = tb.accounts.map(acc => `
                 <tr>
                     <td class="fw-bold">${M.esc(acc.name)}</td>
                     <td><span class="badge bg-secondary-subtle text-secondary text-capitalize">${acc.kind} / ${acc.type}</span></td>
-                    <td class="text-end fw-semibold text-danger">${acc.debit > 0 ? M.money(acc.debit) : '—'}</td>
-                    <td class="text-end fw-semibold text-success">${acc.credit > 0 ? M.money(acc.credit) : '—'}</td>
-                    <td class="text-end fw-bold">${M.money(acc.net_balance)}</td>
+                    <td class="text-end fw-semibold text-danger">${acc.debit > 0 ? formatMoney(acc.debit) : '—'}</td>
+                    <td class="text-end fw-semibold text-success">${acc.credit > 0 ? formatMoney(acc.credit) : '—'}</td>
+                    <td class="text-end fw-bold">${formatMoney(acc.net_balance)}</td>
                 </tr>
             `).join('') || '<tr><td colspan="5" class="text-center text-secondary py-3">No account entries found.</td></tr>';
         } catch(e) {}
@@ -906,7 +910,7 @@
             let html = `
                 <tr class="table-light fw-bold">
                     <td colspan="5">Opening Balance (as of ${M.date(from.value)})</td>
-                    <td class="text-end">${M.money(gl.opening_balance)}</td>
+                    <td class="text-end">${formatMoney(gl.opening_balance)}</td>
                 </tr>
             `;
 
@@ -915,16 +919,16 @@
                     <td>${M.date(e.date)}</td>
                     <td class="font-monospace small">${M.esc(e.reference_no)}</td>
                     <td>${M.esc(e.description)}</td>
-                    <td class="text-end text-danger">${e.debit > 0 ? M.money(e.debit) : '—'}</td>
-                    <td class="text-end text-success">${e.credit > 0 ? M.money(e.credit) : '—'}</td>
-                    <td class="text-end fw-bold">${M.money(e.running_balance)}</td>
+                    <td class="text-end text-danger">${e.debit > 0 ? formatMoneyWithOriginal(e.debit, e) : '—'}</td>
+                    <td class="text-end text-success">${e.credit > 0 ? formatMoneyWithOriginal(e.credit, e) : '—'}</td>
+                    <td class="text-end fw-bold">${formatMoney(e.running_balance)}</td>
                 </tr>
             `).join('');
 
             html += `
                 <tr class="table-light fw-bold">
                     <td colspan="5">Closing Balance (as of ${M.date(to.value)})</td>
-                    <td class="text-end text-primary">${M.money(gl.closing_balance)}</td>
+                    <td class="text-end text-primary">${formatMoney(gl.closing_balance)}</td>
                 </tr>
             `;
 
@@ -935,6 +939,75 @@
     }
 
     document.querySelector('#btnLoadGL').onclick = loadGeneralLedger;
+
+    // --- Currency handling ---
+    let selectedCurrency = null;
+    let cachedCurrencies = [];
+
+    async function loadCurrencies() {
+        try {
+            // Fetch user settings to get base currency
+            let userBaseCurrencyId = null;
+            try {
+                const settings = await M.request('/ajax/settings');
+                userBaseCurrencyId = settings?.base_currency_id;
+            } catch(e) {}
+
+            cachedCurrencies = await M.request('/ajax/currencies');
+            const currencySelect = document.querySelector('#reportCurrency');
+            M.fillSelect(currencySelect, cachedCurrencies, {
+                value: 'id',
+                label: c => `${c.code} (${c.symbol})`,
+                placeholder: 'Select currency...'
+            });
+
+            // Load saved currency from localStorage
+            const savedCurrencyId = localStorage.getItem('reportCurrencyId');
+            if (savedCurrencyId && cachedCurrencies.find(c => String(c.id) === String(savedCurrencyId))) {
+                currencySelect.value = savedCurrencyId;
+                selectedCurrency = cachedCurrencies.find(c => String(c.id) === String(savedCurrencyId));
+            } else if (userBaseCurrencyId && cachedCurrencies.find(c => String(c.id) === String(userBaseCurrencyId))) {
+                // Default to user's base currency setting
+                currencySelect.value = userBaseCurrencyId;
+                selectedCurrency = cachedCurrencies.find(c => String(c.id) === String(userBaseCurrencyId));
+            } else if (cachedCurrencies.length > 0) {
+                // Fallback: base currency (exchange_rate = 1) or first currency
+                const baseCurrency = cachedCurrencies.find(c => Number(c.exchange_rate) === 1) || cachedCurrencies[0];
+                currencySelect.value = baseCurrency.id;
+                selectedCurrency = baseCurrency;
+            }
+
+            currencySelect.onchange = () => {
+                selectedCurrency = cachedCurrencies.find(c => String(c.id) === String(currencySelect.value));
+                if (selectedCurrency) {
+                    localStorage.setItem('reportCurrencyId', selectedCurrency.id);
+                    load(); // Refresh all reports with new currency
+                }
+            };
+        } catch(e) {}
+    }
+
+    function formatMoney(value) {
+        const number = Number(value || 0);
+        if (!selectedCurrency) return `{{ auth()->user()->settings->currency->symbol }} ${number.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+        const rate = Number(selectedCurrency.exchange_rate || 1);
+        const converted = number * rate;
+        return `${selectedCurrency.symbol} ${converted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+    }
+
+    // Format money with support for original foreign currency amounts
+    function formatMoneyWithOriginal(baseAmount, entry) {
+        // If entry has original currency info and it matches selected display currency, show original
+        if (entry?.original_amount !== null && entry?.original_currency_id && entry?.exchange_rate) {
+            const origCurrency = cachedCurrencies.find(c => String(c.id) === String(entry.original_currency_id));
+            if (origCurrency && selectedCurrency && String(origCurrency.id) === String(selectedCurrency.id)) {
+                const origAmt = Number(entry.original_amount || 0);
+                return `${origCurrency.symbol} ${origAmt.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+            }
+        }
+        // Otherwise convert from base currency to display currency
+        return formatMoney(baseAmount);
+    }
 
     async function load() {
         const qs = M.query({ from: from.value, to: to.value });
@@ -949,10 +1022,10 @@
                 M.request('/ajax/budgets')
             ]);
 
-            document.querySelector('#reportIncome').textContent = M.money(summary.income);
-            document.querySelector('#reportExpense').textContent = M.money(summary.expense);
-            document.querySelector('#reportNet').textContent = M.money(summary.net_cash_surplus);
-            document.querySelector('#reportNetWorth').textContent = M.money(nw.net_worth);
+            document.querySelector('#reportIncome').textContent = formatMoney(summary.income);
+            document.querySelector('#reportExpense').textContent = formatMoney(summary.expense);
+            document.querySelector('#reportNet').textContent = formatMoney(summary.net_cash_surplus);
+            document.querySelector('#reportNetWorth').textContent = formatMoney(nw.net_worth);
 
             // Trend chart
             trendChart?.destroy();
@@ -1010,28 +1083,28 @@
             // Cash flow
             document.querySelector('#cashFlowReport').innerHTML = `
                 <div class="row g-3">
-                    <div class="col-4"><div class="small text-secondary">External inflow</div><div class="h5 text-success mt-1">${M.money(cf.inflow)}</div></div>
-                    <div class="col-4"><div class="small text-secondary">External outflow</div><div class="h5 text-danger mt-1">${M.money(cf.outflow)}</div></div>
-                    <div class="col-4"><div class="small text-secondary">Net cash flow</div><div class="h5 mt-1">${M.money(cf.net)}</div></div>
+                    <div class="col-4"><div class="small text-secondary">External inflow</div><div class="h5 text-success mt-1">${formatMoney(cf.inflow)}</div></div>
+                    <div class="col-4"><div class="small text-secondary">External outflow</div><div class="h5 text-danger mt-1">${formatMoney(cf.outflow)}</div></div>
+                    <div class="col-4"><div class="small text-secondary">Net cash flow</div><div class="h5 mt-1">${formatMoney(cf.net)}</div></div>
                 </div>
                 <hr>
-                <div class="small text-secondary">Internal transfers excluded from inflow/outflow: ${M.money(cf.internal_transfers)}</div>
+                <div class="small text-secondary">Internal transfers excluded from inflow/outflow: ${formatMoney(cf.internal_transfers)}</div>
             `;
 
             // Net worth breakdown
             document.querySelector('#netWorthBreakdown').innerHTML = `
-                <div class="d-flex justify-content-between mb-2"><span>Assets</span><strong>${M.money(nw.asset_total)}</strong></div>
-                ${nw.assets.slice(0, 5).map(x => `<div class="d-flex justify-content-between small text-secondary py-1"><span>${M.esc(x.name)}</span><span>${M.money(x.balance)}</span></div>`).join('')}
+                <div class="d-flex justify-content-between mb-2"><span>Assets</span><strong>${formatMoney(nw.asset_total)}</strong></div>
+                ${nw.assets.slice(0, 5).map(x => `<div class="d-flex justify-content-between small text-secondary py-1"><span>${M.esc(x.name)}</span><span>${formatMoney(x.balance)}</span></div>`).join('')}
                 <hr>
-                <div class="d-flex justify-content-between mb-2"><span>Liabilities</span><strong>${M.money(nw.liability_total)}</strong></div>
-                ${nw.liabilities.slice(0, 5).map(x => `<div class="d-flex justify-content-between small text-secondary py-1"><span>${M.esc(x.name)}</span><span>${M.money(x.balance)}</span></div>`).join('')}
+                <div class="d-flex justify-content-between mb-2"><span>Liabilities</span><strong>${formatMoney(nw.liability_total)}</strong></div>
+                ${nw.liabilities.slice(0, 5).map(x => `<div class="d-flex justify-content-between small text-secondary py-1"><span>${M.esc(x.name)}</span><span>${formatMoney(x.balance)}</span></div>`).join('')}
             `;
 
             // Committees Report
             document.querySelector('#commReportActive').textContent = comm.active_count || 0;
-            document.querySelector('#commReportMonthly').textContent = M.money(comm.monthly_contribution_total || 0);
-            document.querySelector('#commReportCollected').textContent = M.money(comm.total_collected || 0);
-            document.querySelector('#commReportDisbursed').textContent = M.money(comm.total_disbursed || 0);
+            document.querySelector('#commReportMonthly').textContent = formatMoney(comm.monthly_contribution_total || 0);
+            document.querySelector('#commReportCollected').textContent = formatMoney(comm.total_collected || 0);
+            document.querySelector('#commReportDisbursed').textContent = formatMoney(comm.total_disbursed || 0);
 
             const commList = comm.committees || [];
             const commTbody = document.querySelector('#commReportTableBody');
@@ -1041,8 +1114,8 @@
                 commTbody.innerHTML = commList.map(c => `
                     <tr>
                         <td class="fw-bold">${M.esc(c.name)}</td>
-                        <td>${M.money(c.contribution_amount)}</td>
-                        <td class="fw-bold text-success">${M.money(c.total_pool_amount)}</td>
+                        <td>${formatMoney(c.contribution_amount)}</td>
+                        <td class="fw-bold text-success">${formatMoney(c.total_pool_amount)}</td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="progress flex-fill" style="height: 6px;">
@@ -1102,6 +1175,7 @@
     applyPreset();
     loadAccountsSelect();
     loadPeopleSelect();
+    loadCurrencies();
     load();
 })();
 </script>

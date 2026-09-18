@@ -21,4 +21,5 @@ enum TransactionType: string
     case CommitteeContribution = 'committee_contribution';
     case CommitteePayout = 'committee_payout';
     case Reversal = 'reversal';
+    case Exchange = 'exchange';
 }

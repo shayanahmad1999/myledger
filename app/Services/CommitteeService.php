@@ -249,7 +249,7 @@ class CommitteeService
 
     public function getSummaryStats(User $user): array
     {
-        $committees = Committee::forUser($user->id)->get();
+        $committees = Committee::forUser($user->id)->with('currency')->get();
         $activeCount = $committees->where('status', 'active')->count();
 
         $totalMonthlyContribution = $committees->where('status', 'active')->sum('contribution_amount');
@@ -264,6 +264,7 @@ class CommitteeService
             'total_committees' => $committees->count(),
             'active_committees' => $activeCount,
             'total_monthly_contribution' => $totalMonthlyContribution,
+            'currency' => $committees->first()->currency ?? '',
             'total_pool_value' => $totalPoolValue,
             'pending_payments_count' => $pendingPaymentsCount,
         ];

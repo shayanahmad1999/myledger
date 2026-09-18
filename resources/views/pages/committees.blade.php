@@ -4,7 +4,7 @@
 @section('page-subtitle', 'Manage rotating savings pools, member turn schedules, contributions, and pot payouts.')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4" data-base-currency-id="{{ auth()->user()->settings?->base_currency_id }}">
     <div></div>
     <button class="btn btn-primary" id="btnNewCommittee">
         <i class="bi bi-plus-lg me-2"></i>New Committee
@@ -31,7 +31,7 @@
             </div>
             <div>
                 <div class="text-secondary small fw-medium">Monthly Contribution</div>
-                <div class="h4 mb-0 fw-bold" id="statMonthlyContribution">Rs 0</div>
+                <div class="h4 mb-0 fw-bold" id="statMonthlyContribution">{{ auth()->user()->settings->currency->symbol }} 0</div>
             </div>
         </div>
     </div>
@@ -42,7 +42,7 @@
             </div>
             <div>
                 <div class="text-secondary small fw-medium">Total Pool Value</div>
-                <div class="h4 mb-0 fw-bold" id="statTotalPool">Rs 0</div>
+                <div class="h4 mb-0 fw-bold" id="statTotalPool">{{ auth()->user()->settings->currency->symbol }} 0</div>
             </div>
         </div>
     </div>
@@ -175,7 +175,7 @@
                     <div class="d-flex gap-4">
                         <div>
                             <div class="text-secondary small">Contribution / Member</div>
-                            <div class="fw-bold" id="detailContribution">Rs 0</div>
+                            <div class="fw-bold" id="detailContribution">{{ auth()->user()->settings->currency->symbol }} 0</div>
                         </div>
                         <div>
                             <div class="text-secondary small">Total Members</div>
@@ -183,7 +183,7 @@
                         </div>
                         <div>
                             <div class="text-secondary small">Total Pool per Round</div>
-                            <div class="fw-bold text-success" id="detailPoolAmount">Rs 0</div>
+                            <div class="fw-bold text-success" id="detailPoolAmount">{{ auth()->user()->settings->currency->symbol }} 0</div>
                         </div>
                         <div>
                             <div class="text-secondary small">Frequency</div>
@@ -361,7 +361,7 @@
                     <div class="mb-2 text-primary fs-3"><i class="bi bi-check-circle-fill"></i></div>
                     <h4 class="h5 fw-bold mb-1" id="receiptTitle">Committee Payment Receipt</h4>
                     <div class="text-secondary small mb-3" id="receiptCommitteeName">Committee Name</div>
-                    <div class="h3 fw-bold text-success mb-3" id="receiptAmount">Rs 0</div>
+                    <div class="h3 fw-bold text-success mb-3" id="receiptAmount">{{ auth()->user()->settings->currency->symbol }} 0</div>
                     <div class="border-top border-bottom py-3 text-start small">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-secondary">Member:</span>
@@ -433,7 +433,11 @@
 
             // Fill self-person select
             M.fillSelect(formCommittee.my_person_id, people, { placeholder: 'Select yourself (Optional)' });
-            M.fillSelect(formCommittee.currency_id, currencies, { label: c => `${c.code} (${c.symbol})`, placeholder: 'Select currency...' });
+            function getBaseCurrencyId() {
+        return document.querySelector('[data-base-currency-id]')?.dataset?.baseCurrencyId || null;
+    }
+
+    M.fillSelect(formCommittee.currency_id, currencies, { label: c => `${c.code} (${c.symbol})`, placeholder: 'Select currency...', selected: getBaseCurrencyId() });
             M.fillSelect(document.querySelector('#paymentAccountId'), accounts, { placeholder: 'Select account for deposit...' });
             M.fillSelect(payoutForm.account_id, accounts, { placeholder: 'Select account for withdrawal...' });
             updateCommitteeRateNotice();
@@ -453,8 +457,8 @@
 
             // Render stats
             document.querySelector('#statActiveCount').textContent = stats.active_committees || 0;
-            document.querySelector('#statMonthlyContribution').textContent = M.money(stats.total_monthly_contribution || 0);
-            document.querySelector('#statTotalPool').textContent = M.money(stats.total_pool_value || 0);
+            document.querySelector('#statMonthlyContribution').textContent = M.money(stats.total_monthly_contribution || 0, stats.currency.symbol);
+            document.querySelector('#statTotalPool').textContent = M.money(stats.total_pool_value || 0, stats.currency.symbol);
             document.querySelector('#statPendingPayments').textContent = stats.pending_payments_count || 0;
 
             // Render cards
@@ -498,11 +502,11 @@
                                 <div class="bg-light p-3 rounded mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="text-secondary small">Contribution / Slot</span>
-                                        <span class="fw-bold text-primary">${M.money(c.contribution_amount)}</span>
+                                        <span class="fw-bold text-primary">${M.money(c.contribution_amount, c.currency.symbol)}</span>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="text-secondary small">Pot / Round (${c.frequency})</span>
-                                        <span class="fw-bold text-success">${M.money(c.total_pool_amount)}</span>
+                                        <span class="fw-bold text-success">${M.money(c.total_pool_amount, c.currency.symbol)}</span>
                                     </div>
                                 </div>
 
@@ -707,9 +711,9 @@
             document.querySelector('#detailModalTitle').textContent = currentCommittee.name;
             document.querySelector('#detailModalSubtitle').textContent = `Started ${M.date(currentCommittee.start_date)} · Status: ${currentCommittee.status.toUpperCase()}`;
 
-            document.querySelector('#detailContribution').textContent = M.money(currentCommittee.contribution_amount);
+            document.querySelector('#detailContribution').textContent = M.money(currentCommittee.contribution_amount, currentCommittee.currency.symbol);
             document.querySelector('#detailMembersCount').textContent = currentCommittee.total_members;
-            document.querySelector('#detailPoolAmount').textContent = M.money(currentCommittee.total_pool_amount);
+            document.querySelector('#detailPoolAmount').textContent = M.money(currentCommittee.total_pool_amount, currentCommittee.currency.symbol);
             document.querySelector('#detailFrequency').textContent = currentCommittee.frequency;
 
             const progress = currentCommittee.progress_percent || 0;
@@ -728,13 +732,13 @@
     function showReceiptModal({ title, committeeName, amount, memberName, type, date, status }) {
         document.querySelector('#receiptTitle').textContent = title;
         document.querySelector('#receiptCommitteeName').textContent = committeeName;
-        document.querySelector('#receiptAmount').textContent = M.money(amount);
+        document.querySelector('#receiptAmount').textContent = M.money(amount, currentCommittee.currency.symbol);
         document.querySelector('#receiptMember').textContent = memberName;
         document.querySelector('#receiptType').textContent = type;
         document.querySelector('#receiptDate').textContent = M.date(date);
         document.querySelector('#receiptStatus').textContent = (status || 'PAID').toUpperCase();
 
-        const rawText = `🧾 *${title}*\n📌 *Committee:* ${committeeName}\n👤 *Member:* ${memberName}\n💰 *Amount:* ${M.money(amount)}\n📅 *Date:* ${M.date(date)}\n✅ *Status:* ${(status || 'PAID').toUpperCase()}\n\n-- Verified by MyLedger`;
+        const rawText = `🧾 *${title}*\n📌 *Committee:* ${committeeName}\n👤 *Member:* ${memberName}\n💰 *Amount:* ${M.money(amount, currentCommittee.currency.symbol)}\n📅 *Date:* ${M.date(date)}\n✅ *Status:* ${(status || 'PAID').toUpperCase()}\n\n-- Verified by MyLedger`;
 
         document.querySelector('#btnCopyWhatsApp').onclick = () => {
             navigator.clipboard.writeText(rawText).then(() => {
@@ -842,7 +846,7 @@
             return `
                 <tr>
                     <td class="fw-medium">${M.esc(memberName)}</td>
-                    <td class="fw-bold">${M.money(p.amount)}</td>
+                    <td class="fw-bold">${M.money(p.amount, currentCommittee.currency.symbol)}</td>
                     <td>${isPaid ? M.date(p.paid_at) : '<span class="text-secondary">—</span>'}</td>
                     <td>
                         ${isPaid ? '<span class="badge bg-success">Paid</span>' : '<span class="badge bg-warning text-dark">Pending</span>'}
@@ -915,7 +919,7 @@
 
         payoutForm.reset();
         payoutForm.round_id.value = currentRound.id;
-        document.querySelector('#payoutAmountDisplay').value = M.money(currentRound.payout_amount);
+        document.querySelector('#payoutAmountDisplay').value = M.money(currentRound.payout_amount, currentCommittee.currency.symbol);
 
         // Fill members select
         M.fillSelect(payoutForm.winner_member_id, currentCommittee.members, {

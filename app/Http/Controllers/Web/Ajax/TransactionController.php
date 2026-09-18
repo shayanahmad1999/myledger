@@ -15,7 +15,7 @@ class TransactionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = FinancialTransaction::forUser($request->user()->id)
-            ->with(['category', 'person', 'sourceAccount', 'destinationAccount', 'tags'])
+            ->with(['category', 'person', 'sourceAccount', 'destinationAccount', 'tags', 'currency'])
             ->latest('transaction_date')
             ->latest('id');
 

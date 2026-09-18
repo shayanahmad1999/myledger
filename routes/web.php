@@ -96,6 +96,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/currencies', [CurrencyController::class, 'index']);
         Route::post('/currencies', [CurrencyController::class, 'store']);
         Route::patch('/currencies/{currency}', [CurrencyController::class, 'update']);
+        Route::get('/currencies/{currency}/history', [CurrencyController::class, 'history']);
+        Route::post('/currencies/{currency}/history', [CurrencyController::class, 'storeHistory']);
+        Route::delete('/currencies/{currency}/history/{history}', [CurrencyController::class, 'destroyHistory']);
 
         Route::prefix('reports')->group(function () {
             Route::get('/summary', [ReportController::class, 'summary']);

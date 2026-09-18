@@ -24,7 +24,7 @@
         })();
     </script>
 </head>
-<body class="app-body">
+<body class="app-body" data-currency-symbol="{{ auth()->user()->settings->currency->symbol }}">
 <div class="app-shell">
     <aside class="sidebar d-none d-lg-flex">
         <a href="{{ route('dashboard') }}" class="brand text-decoration-none">

@@ -20,7 +20,7 @@ class CalendarService
 
         // 1. Transactions
         $transactions = FinancialTransaction::forUser($user->id)
-            ->with(['category', 'sourceAccount', 'destinationAccount', 'person'])
+            ->with(['category', 'sourceAccount', 'destinationAccount', 'person', 'currency'])
             ->whereBetween('transaction_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->whereIn('status', ['posted'])
             ->get();
@@ -40,6 +40,7 @@ class CalendarService
                 'details' => [
                     'reference' => $tx->reference_no,
                     'category' => $tx->category?->name,
+                    'currency' => $tx->currency?->symbol,
                     'source' => $tx->sourceAccount?->name,
                     'destination' => $tx->destinationAccount?->name,
                     'person' => $tx->person?->name,

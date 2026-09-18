@@ -152,7 +152,7 @@ class ReportService
         $date ??= now()->toDateString();
 
         return Budget::forUser($user->id)
-            ->with('category')
+            ->with(['category', 'currency'])
             ->where('is_active', true)
             ->whereDate('period_start', '<=', $date)
             ->whereDate('period_end', '>=', $date)
@@ -176,6 +176,7 @@ class ReportService
                 return [
                     'id' => $budget->id,
                     'category' => $budget->category->name,
+                    'currency' => $budget->currency->symbol,
                     'amount' => $amount,
                     'spent' => $spent,
                     'remaining' => max(0, $amount - $spent),
@@ -226,7 +227,7 @@ class ReportService
     public function loans(User $user): array
     {
         $items = Loan::forUser($user->id)
-            ->with('person')
+            ->with(['person', 'currency'])
             ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->get();
 
@@ -238,6 +239,9 @@ class ReportService
                 ->filter(fn ($loan) => $loan->direction->value === 'taken' && $loan->status === 'active')
                 ->sum('outstanding_principal'),
             'items' => $items,
+            'currency' => [
+                'symbol' => $items->first()?->currency->symbol,
+            ],
         ];
     }
 
@@ -370,6 +374,10 @@ class ReportService
                 'financial_transactions.transaction_date',
                 'financial_transactions.type',
                 'financial_transactions.description',
+                'financial_transactions.currency_id',
+                'financial_transactions.original_amount',
+                'financial_transactions.original_currency_id',
+                'financial_transactions.exchange_rate',
                 'transaction_entries.debit',
                 'transaction_entries.credit',
                 'transaction_entries.memo'
@@ -393,6 +401,10 @@ class ReportService
                 'debit' => round($d, 2),
                 'credit' => round($c, 2),
                 'running_balance' => round($runningBalance, 2),
+                'currency_id' => $e->currency_id,
+                'original_amount' => $e->original_amount ? round((float) $e->original_amount, 2) : null,
+                'original_currency_id' => $e->original_currency_id,
+                'exchange_rate' => $e->exchange_rate ? round((float) $e->exchange_rate, 8) : null,
             ];
         }
 
@@ -659,12 +671,20 @@ class ReportService
             ->whereBetween('transaction_date', [$from, $to])
             ->orderBy('transaction_date')
             ->orderBy('id')
+            ->select([
+                'id', 'transaction_date', 'reference_no', 'type', 'description',
+                'currency_id', 'original_amount', 'original_currency_id', 'exchange_rate', 'amount'
+            ])
             ->get();
 
         $priorTxs = FinancialTransaction::forUser($user->id)
             ->where('person_id', $personId)
             ->where('status', 'posted')
             ->whereDate('transaction_date', '<', $from)
+            ->select([
+                'id', 'transaction_date', 'reference_no', 'type', 'description',
+                'currency_id', 'original_amount', 'original_currency_id', 'exchange_rate', 'amount'
+            ])
             ->get();
 
         $calcNet = function ($tx) {
@@ -702,6 +722,10 @@ class ReportService
                 'debit' => round($debit, 2),
                 'credit' => round($credit, 2),
                 'running_balance' => round($runningBalance, 2),
+                'currency_id' => $tx->currency_id,
+                'original_amount' => $tx->original_amount ? round((float) $tx->original_amount, 2) : null,
+                'original_currency_id' => $tx->original_currency_id,
+                'exchange_rate' => $tx->exchange_rate ? round((float) $tx->exchange_rate, 8) : null,
             ];
         }
 

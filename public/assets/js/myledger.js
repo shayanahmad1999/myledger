@@ -43,7 +43,7 @@ window.MyLedger = (() => {
         return { ...obj, ...extras };
     }
 
-    function money(value, symbol = "Rs") {
+    function money(value, symbol = document.body.dataset.currencySymbol) {
         const number = Number(value || 0);
         return `${symbol} ${number.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     }

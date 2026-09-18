@@ -3,19 +3,19 @@
 @section('page-title', 'Loans')
 @section('page-subtitle', 'Track money you lend and money you borrow.')
 @section('content')
-    <div class="row g-3 mb-4">
+<div class="row g-3 mb-4" data-base-currency-id="{{ auth()->user()->settings?->base_currency_id }}">
         <div class="col-md-6">
             <div class="surface-card stat-card">
                 <div class="stat-icon"><i class="bi bi-arrow-down-left"></i></div>
                 <div class="stat-label">You will receive</div>
-                <div class="stat-value text-success" id="loanGivenTotal">Rs 0</div>
+                <div class="stat-value text-success" id="loanGivenTotal">{{ auth()->user()->settings->currency->symbol }} 0</div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="surface-card stat-card">
                 <div class="stat-icon"><i class="bi bi-arrow-up-right"></i></div>
                 <div class="stat-label">You have to pay</div>
-                <div class="stat-value text-danger" id="loanTakenTotal">Rs 0</div>
+                <div class="stat-value text-danger" id="loanTakenTotal">{{ auth()->user()->settings->currency->symbol }} 0</div>
             </div>
         </div>
     </div>
@@ -76,6 +76,10 @@
                     <div class="mt-3 create-only">
                         <label class="form-label">Money account</label>
                         <select class="form-select" name="account_id"></select>
+                    </div>
+                    <div class="mt-3 create-only">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" name="currency_id" id="loanCurrencySelect"></select>
                     </div>
                     <div class="row g-3 mt-0">
                         <div class="col-md-6">
@@ -193,7 +197,7 @@
                         <div class="mb-2 text-primary fs-3"><i class="bi bi-file-earmark-text-fill"></i></div>
                         <h4 class="h5 fw-bold mb-1" id="receiptLoanTitle">Loan Receipt</h4>
                         <div class="text-secondary small mb-3" id="receiptLoanPerson">Person Name</div>
-                        <div class="h3 fw-bold text-success mb-3" id="receiptLoanAmount">Rs 0</div>
+                        <div class="h3 fw-bold text-success mb-3" id="receiptLoanAmount">{{ auth()->user()->settings->currency->symbol }} 0</div>
                         <div class="border-top border-bottom py-3 text-start small">
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-secondary">Direction:</span>
@@ -201,7 +205,7 @@
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-secondary">Outstanding Principal:</span>
-                                <strong id="receiptLoanOutstanding">Rs 0</strong>
+                                <strong id="receiptLoanOutstanding">{{ auth()->user()->settings->currency->symbol }} 0</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-secondary">Start Date:</span>
@@ -248,27 +252,41 @@
 
             function updateLoanRateNotice() {
                 const amt = form.principal.value;
-                const accId = form.account_id.value;
-                const acc = accounts.find(a => String(a.id) === String(accId));
-                M.renderCurrencyRateNotice(document.querySelector('#loanRateNotice'), amt, acc?.currency_id);
+                const currId = form.currency_id.value;
+                M.renderCurrencyRateNotice(document.querySelector('#loanRateNotice'), amt, currId);
             }
 
             async function refs() {
                 [accounts, people] = await Promise.all([
                     M.request('/ajax/accounts'),
-                    M.request('/ajax/people'),
-                    M.getCurrencies()
+                    M.request('/ajax/people')
                 ]);
+                currencies = await M.getCurrencies();
                 M.fillSelect(form.account_id, accounts);
                 M.fillSelect(repay.account_id, accounts);
                 M.fillSelect(form.person_id, people, {
                     placeholder: 'Select person'
                 });
+                M.fillSelect(form.currency_id, currencies, {
+                    label: c => `${c.code} (${c.symbol})`,
+                    placeholder: 'Select currency...',
+                    selected: getBaseCurrencyId()
+                });
+                form.account_id.onchange = () => {
+                    const acc = accounts.find(a => String(a.id) === String(form.account_id.value));
+                    if (acc && !form.currency_id.value) {
+                        form.currency_id.value = acc.currency_id;
+                    }
+                };
                 updateLoanRateNotice();
             }
 
+            function getBaseCurrencyId() {
+                return document.querySelector('[data-base-currency-id]')?.dataset?.baseCurrencyId || null;
+            }
+
             form.principal.oninput = updateLoanRateNotice;
-            form.account_id.onchange = updateLoanRateNotice;
+            form.currency_id.onchange = updateLoanRateNotice;
 
             async function load() {
                 const d = document.querySelector('#loanDirectionFilter').value;
@@ -292,8 +310,8 @@
                             ${M.typeValue(l.direction) === 'given' ? 'Given' : 'Taken'}
                         </span>
                     </td>
-                    <td>${M.money(l.principal)}</td>
-                    <td class="fw-semibold">${M.money(l.outstanding_principal)}</td>
+                    <td>${M.money(l.principal, l.currency.symbol)}</td>
+                    <td class="fw-semibold">${M.money(l.outstanding_principal, l.currency.symbol)}</td>
                     <td>${M.date(l.due_date)}</td>
                     <td>
                         <span class="badge ${l.status === 'active' ? 'text-bg-primary' : l.status === 'paid' ? 'text-bg-success' : 'text-bg-secondary'}">
@@ -328,15 +346,15 @@
                     document.querySelector('#receiptLoanTitle').textContent = 'Loan Repayment Receipt';
                     document.querySelector('#receiptLoanPerson').textContent = personName + (l.title ? ` (${l.title})` :
                         '');
-                    document.querySelector('#receiptLoanAmount').textContent = M.money(repayment.amount);
+                    document.querySelector('#receiptLoanAmount').textContent = M.money(repayment.amount, l.currency.symbol);
                     document.querySelector('#receiptLoanDirection').textContent = dirText;
-                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal);
+                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal, l.currency.symbol);
                     document.querySelector('#receiptLoanStartDate').textContent = M.date(repayment.date);
                     document.querySelector('#receiptLoanDueDate').textContent = l.due_date ? M.date(l.due_date) : 'N/A';
                     document.querySelector('#receiptLoanStatus').textContent = 'REPAID';
 
                     const rawText =
-                        `🧾 *Loan Repayment Receipt*\n📌 *Person:* ${personName}\n🏷️ *Loan:* ${l.title || dirText}\n↔️ *Direction:* ${dirText}\n💰 *Repayment Amount:* ${M.money(repayment.amount)}\n📉 *Remaining Balance:* ${M.money(l.outstanding_principal)}\n📅 *Payment Date:* ${M.date(repayment.date)}\n✅ *Status:* PAID\n\n-- Verified by MyLedger Personal Finance`;
+                        `🧾 *Loan Repayment Receipt*\n📌 *Person:* ${personName}\n🏷️ *Loan:* ${l.title || dirText}\n↔️ *Direction:* ${dirText}\n💰 *Repayment Amount:* ${M.money(repayment.amount, l.currency.symbol)}\n📉 *Remaining Balance:* ${M.money(l.outstanding_principal, l.currency.symbol)}\n📅 *Payment Date:* ${M.date(repayment.date)}\n✅ *Status:* PAID\n\n-- Verified by MyLedger Personal Finance`;
 
                     document.querySelector('#btnCopyLoanWhatsApp').onclick = () => {
                         navigator.clipboard.writeText(rawText).then(() => {
@@ -349,15 +367,15 @@
                 } else {
                     document.querySelector('#receiptLoanTitle').textContent = l.title || dirText;
                     document.querySelector('#receiptLoanPerson').textContent = personName;
-                    document.querySelector('#receiptLoanAmount').textContent = M.money(l.principal);
+                    document.querySelector('#receiptLoanAmount').textContent = M.money(l.principal, l.currency.symbol);
                     document.querySelector('#receiptLoanDirection').textContent = dirText;
-                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal);
+                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal, l.currency.symbol);
                     document.querySelector('#receiptLoanStartDate').textContent = M.date(l.start_date);
                     document.querySelector('#receiptLoanDueDate').textContent = l.due_date ? M.date(l.due_date) : 'N/A';
                     document.querySelector('#receiptLoanStatus').textContent = String(l.status).toUpperCase();
 
                     const rawText =
-                        `🧾 *Loan Statement / Receipt*\n📌 *Person:* ${personName}\n🏷️ *Title:* ${l.title || 'Loan'}\n↔️ *Type:* ${dirText}\n💰 *Principal:* ${M.money(l.principal)}\n📉 *Outstanding:* ${M.money(l.outstanding_principal)}\n📅 *Start Date:* ${M.date(l.start_date)}\n📆 *Due Date:* ${l.due_date ? M.date(l.due_date) : 'N/A'}\n✅ *Status:* ${String(l.status).toUpperCase()}\n\n-- Verified by MyLedger Personal Finance`;
+                        `🧾 *Loan Statement / Receipt*\n📌 *Person:* ${personName}\n🏷️ *Title:* ${l.title || 'Loan'}\n↔️ *Type:* ${dirText}\n💰 *Principal:* ${M.money(l.principal, l.currency.symbol)}\n📉 *Outstanding:* ${M.money(l.outstanding_principal, l.currency.symbol)}\n📅 *Start Date:* ${M.date(l.start_date)}\n📆 *Due Date:* ${l.due_date ? M.date(l.due_date) : 'N/A'}\n✅ *Status:* ${String(l.status).toUpperCase()}\n\n-- Verified by MyLedger Personal Finance`;
 
                     document.querySelector('#btnCopyLoanWhatsApp').onclick = () => {
                         navigator.clipboard.writeText(rawText).then(() => {

@@ -133,7 +133,7 @@
                         <div class="account-icon"><i class="bi bi-${a.type === 'bank' ? 'bank' : a.type === 'savings' ? 'piggy-bank' : a.type === 'investment' ? 'graph-up-arrow' : 'wallet2'}"></i></div>
                         <span class="badge-soft">${M.esc(a.type)}</span>
                     </div>
-                    <div class="account-balance">${M.money(a.balance)}</div>
+                    <div class="account-balance">${M.money(a.balance, a.currency.sybmol)}</div>
                     <div class="fw-semibold small mt-1">${M.esc(a.name)}</div>
                     <div class="account-subtitle">${M.esc(a.institution || (a.last_four ? `•••• ${a.last_four}` : 'Personal account'))}</div>
                 </div>
@@ -147,13 +147,13 @@
                 <div class="col-6">
                     <div class="p-3 rounded-4 bg-body-tertiary">
                         <div class="small text-secondary">You will receive</div>
-                        <div class="h5 mb-0 mt-2 text-success">${M.money(loans.given_total)}</div>
+                        <div class="h5 mb-0 mt-2 text-success">${M.money(loans.given_total, loans.currency.sybmol)}</div>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="p-3 rounded-4 bg-body-tertiary">
                         <div class="small text-secondary">You have to pay</div>
-                        <div class="h5 mb-0 mt-2 text-danger">${M.money(loans.taken_total)}</div>
+                        <div class="h5 mb-0 mt-2 text-danger">${M.money(loans.taken_total, loans.currency.sybmol)}</div>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
             <div class="p-3 rounded-3 border mb-2 bg-body-tertiary">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <h4 class="h6 fw-bold mb-0 text-truncate">${M.esc(c.name)}</h4>
-                    <span class="badge bg-primary">${M.money(c.total_pool_amount)} Pot</span>
+                    <span class="badge bg-primary">${M.money(c.total_pool_amount , c.currency.sybmol)} Pot</span>
                 </div>
                 <div class="d-flex justify-content-between small text-secondary">
                     <span>Next Due: <strong>${c.next_due_date ? M.date(c.next_due_date) : 'N/A'}</strong></span>
@@ -194,7 +194,7 @@
                     <div class="transaction-title">${M.esc(t.description || t.category?.name || M.typeValue(t.type).replaceAll('_',' '))}</div>
                     <div class="transaction-meta">${M.date(t.transaction_date)} · ${M.esc(t.source_account?.name || t.destination_account?.name || t.person?.name || '')}</div>
                 </div>
-                <div class="text-end ${cls(t)}">${M.money(t.amount)}</div>
+                <div class="text-end ${cls(t)}">${M.money(t.amount, t.currency.sybmol)}</div>
             </div>
         `).join('') : '<div class="empty-state py-4"><i class="bi bi-receipt"></i>No transactions yet.</div>';
 
@@ -209,8 +209,8 @@
                     <div class="progress-bar ${b.over_budget?'bg-danger':''}" style="width:${Math.min(100,b.percent)}%;height:100%"></div>
                 </div>
                 <div class="d-flex justify-content-between small text-secondary mt-1">
-                    <span>${M.money(b.spent)} spent</span>
-                    <span>${M.money(b.amount)} budget</span>
+                    <span>${M.money(b.spent, b.currency)} spent</span>
+                    <span>${M.money(b.amount, b.currency)} budget</span>
                 </div>
             </div>
         `).join('') : '<div class="empty-state py-4"><i class="bi bi-bullseye"></i>No active budgets.</div>';

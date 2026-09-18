@@ -20,6 +20,7 @@ class RecurringTransactionController extends Controller
     {
         return response()->json(
             RecurringTransaction::forUser($request->user()->id)
+                ->with('currency')
                 ->orderBy('next_run_at')
                 ->get()
         );
