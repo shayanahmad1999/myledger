@@ -12,14 +12,16 @@ use App\Models\User;
 
 class DashboardService
 {
-    public function __construct(private readonly ReportService $reports) {}
+    public function __construct(
+        private readonly ReportService $reports
+    ) {}
 
     public function build(User $user): array
     {
         $monthStart = now()->startOfMonth()->toDateString();
         $monthEnd = now()->endOfMonth()->toDateString();
 
-        $accounts = LedgerAccount::forUser($user->id)->with('currency')->moneyAccounts()->where('is_archived', false)->get()->map(fn ($a) => [
+        $accounts = LedgerAccount::forUser($user->id)->with('currency')->moneyAccounts()->where('is_archived', false)->get()->map(fn($a) => [
             'id' => $a->id,
             'name' => $a->name,
             'type' => $a->type->value,
@@ -33,8 +35,8 @@ class DashboardService
             ],
         ]);
 
-        $savingsTotal = (float) $accounts->filter(fn ($a) => $a['type'] === LedgerAccountType::Savings->value)->sum('balance');
-        $liquidCash = (float) $accounts->filter(fn ($a) => in_array($a['type'], [LedgerAccountType::Cash->value, LedgerAccountType::Bank->value, LedgerAccountType::Savings->value], true))->sum('balance');
+        $savingsTotal = (float) $accounts->filter(fn($a) => $a['type'] === LedgerAccountType::Savings->value)->sum('balance');
+        $liquidCash = (float) $accounts->filter(fn($a) => in_array($a['type'], [LedgerAccountType::Cash->value, LedgerAccountType::Bank->value, LedgerAccountType::Savings->value], true))->sum('balance');
 
         $monthSummary = $this->reports->summary($user, $monthStart, $monthEnd);
         $avgMonthlyExpense = max(1, (float) $monthSummary['expense']);

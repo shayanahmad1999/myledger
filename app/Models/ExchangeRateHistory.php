@@ -8,6 +8,7 @@ class ExchangeRateHistory extends Model
 {
     protected $table = 'exchange_rate_history';
     protected $fillable = ['currency_id', 'base_currency_id', 'rate_date', 'rate'];
+
     protected function casts(): array
     {
         return [

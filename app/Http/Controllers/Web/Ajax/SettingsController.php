@@ -9,7 +9,11 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-    public function show(Request $r):JsonResponse{return response()->json($r->user()->settings);}
+    public function show(Request $r): JsonResponse
+    {
+        return response()->json($r->user()->settings);
+    }
+
     public function update(Request $r): JsonResponse
     {
         $d = $r->validate([
@@ -22,7 +26,7 @@ class SettingsController extends Controller
 
         if (isset($d['base_currency_id'])) {
             $currentBaseId = $r->user()->settings?->base_currency_id;
-            if ($currentBaseId && (int)$d['base_currency_id'] !== (int)$currentBaseId) {
+            if ($currentBaseId && (int) $d['base_currency_id'] !== (int) $currentBaseId) {
                 $hasTransactions = \App\Models\FinancialTransaction::forUser($r->user()->id)->exists();
                 abort_if($hasTransactions, 422, 'The software uses a single primary base currency for your ledger. You cannot change your base currency once transactions exist.');
             }

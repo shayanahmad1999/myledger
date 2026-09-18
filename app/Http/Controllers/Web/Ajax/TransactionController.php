@@ -20,18 +20,18 @@ class TransactionController extends Controller
             ->latest('id');
 
         $query
-            ->when($request->type, fn ($q, $value) => $q->where('type', $value))
+            ->when($request->type, fn($q, $value) => $q->where('type', $value))
             ->when($request->account_id, function ($q, $value) {
-                $q->where(fn ($inner) => $inner->where('source_account_id', $value)->orWhere('destination_account_id', $value));
+                $q->where(fn($inner) => $inner->where('source_account_id', $value)->orWhere('destination_account_id', $value));
             })
-            ->when($request->category_id, fn ($q, $value) => $q->where('category_id', $value))
-            ->when($request->person_id, fn ($q, $value) => $q->where('person_id', $value))
-            ->when($request->tag_id, fn ($q, $value) => $q->whereHas('tags', fn ($tags) => $tags->whereKey($value)))
-            ->when($request->from, fn ($q, $value) => $q->whereDate('transaction_date', '>=', $value))
-            ->when($request->to, fn ($q, $value) => $q->whereDate('transaction_date', '<=', $value))
+            ->when($request->category_id, fn($q, $value) => $q->where('category_id', $value))
+            ->when($request->person_id, fn($q, $value) => $q->where('person_id', $value))
+            ->when($request->tag_id, fn($q, $value) => $q->whereHas('tags', fn($tags) => $tags->whereKey($value)))
+            ->when($request->from, fn($q, $value) => $q->whereDate('transaction_date', '>=', $value))
+            ->when($request->to, fn($q, $value) => $q->whereDate('transaction_date', '<=', $value))
             ->when($request->search, function ($q, $value) {
-                $needle = '%'.mb_strtolower($value).'%';
-                $q->where(fn ($inner) => $inner
+                $needle = '%' . mb_strtolower($value) . '%';
+                $q->where(fn($inner) => $inner
                     ->whereRaw('LOWER(description) LIKE ?', [$needle])
                     ->orWhereRaw('LOWER(reference_no) LIKE ?', [$needle]));
             });
@@ -44,7 +44,15 @@ class TransactionController extends Controller
         $this->owned($request, $transaction);
 
         return response()->json($transaction->load([
-            'entries.account', 'category', 'person', 'loan', 'tags', 'attachments', 'sourceAccount', 'destinationAccount',
+            'entries.account',
+            'category',
+            'currency',
+            'person',
+            'loan',
+            'tags',
+            'attachments',
+            'sourceAccount',
+            'destinationAccount',
         ]));
     }
 
@@ -116,7 +124,7 @@ class TransactionController extends Controller
             'tag_ids.*' => 'integer|exists:tags,id',
         ], $extra));
 
-        if (! empty($data['person_id'])) {
+        if (!empty($data['person_id'])) {
             abort_unless(
                 Person::whereKey($data['person_id'])->where('user_id', $request->user()->id)->exists(),
                 403,
@@ -124,7 +132,7 @@ class TransactionController extends Controller
             );
         }
 
-        if (! empty($data['tag_ids'])) {
+        if (!empty($data['tag_ids'])) {
             $ownedCount = Tag::where('user_id', $request->user()->id)->whereIn('id', $data['tag_ids'])->count();
             abort_unless($ownedCount === count(array_unique($data['tag_ids'])), 403, 'One or more tags do not belong to you.');
         }

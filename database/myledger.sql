@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2026 at 09:29 AM
+-- Generation Time: Sep 18, 2026 at 12:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,13 +41,6 @@ CREATE TABLE `attachments` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `attachments`
---
-
-INSERT INTO `attachments` (`id`, `user_id`, `financial_transaction_id`, `loan_id`, `disk`, `path`, `original_name`, `mime_type`, `size`, `created_at`, `updated_at`) VALUES
-(1, 1, 8, NULL, 'local', 'finance/1/attachments/Rsx6NeN6N0q5HobCrkiSD9dSTbkF9q9APOc5IlPp.jpg', 'images.jpg', 'image/jpeg', 26969, '2026-09-15 11:59:26', '2026-09-15 11:59:26');
-
 -- --------------------------------------------------------
 
 --
@@ -67,33 +60,6 @@ CREATE TABLE `audit_logs` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `audit_logs`
---
-
-INSERT INTO `audit_logs` (`id`, `user_id`, `auditable_type`, `auditable_id`, `action`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`, `updated_at`) VALUES
-(1, 1, 'App\\Models\\FinancialTransaction', 1, 'created', NULL, '{\"type\":\"opening_balance\",\"reference_no\":\"OPEN-20260915-IRBCVC\",\"amount\":150000,\"date\":\"2026-08-31\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:43:04', '2026-09-15 11:43:04'),
-(2, 1, 'App\\Models\\FinancialTransaction', 2, 'created', NULL, '{\"type\":\"opening_balance\",\"reference_no\":\"OPEN-20260915-GTAGU2\",\"amount\":80000,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:43:20', '2026-09-15 11:43:20'),
-(3, 1, 'App\\Models\\FinancialTransaction', 3, 'created', NULL, '{\"type\":\"opening_balance\",\"reference_no\":\"OPEN-20260915-UI4GKW\",\"amount\":20000,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:44:06', '2026-09-15 11:44:06'),
-(4, 1, 'App\\Models\\FinancialTransaction', 4, 'created', NULL, '{\"type\":\"opening_balance\",\"reference_no\":\"OPEN-20260915-LY0WJ7\",\"amount\":50000,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:44:22', '2026-09-15 11:44:22'),
-(5, 1, 'App\\Models\\FinancialTransaction', 5, 'created', NULL, '{\"type\":\"income\",\"reference_no\":\"INCO-20260915-BBDA9L\",\"amount\":120000,\"date\":\"2026-09-01\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:45:27', '2026-09-15 11:45:27'),
-(6, 1, 'App\\Models\\FinancialTransaction', 6, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-Y4XV1S\",\"amount\":30000,\"date\":\"2026-09-02\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:47:21', '2026-09-15 11:47:21'),
-(7, 1, 'App\\Models\\FinancialTransaction', 7, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-1ZKWLG\",\"amount\":8000,\"date\":\"2026-09-03\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:48:01', '2026-09-15 11:48:01'),
-(8, 1, 'App\\Models\\FinancialTransaction', 8, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-XMNFIA\",\"amount\":5000,\"date\":\"2026-09-04\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:48:30', '2026-09-15 11:48:30'),
-(9, 1, 'App\\Models\\FinancialTransaction', 9, 'created', NULL, '{\"type\":\"transfer\",\"reference_no\":\"TRAN-20260915-AS7AAP\",\"amount\":20000,\"date\":\"2026-09-05\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:49:04', '2026-09-15 11:49:04'),
-(10, 1, 'App\\Models\\FinancialTransaction', 10, 'created', NULL, '{\"type\":\"transfer\",\"reference_no\":\"TRAN-20260915-VHVMXY\",\"amount\":15000,\"date\":\"2026-09-06\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:49:37', '2026-09-15 11:49:37'),
-(11, 1, 'App\\Models\\FinancialTransaction', 11, 'created', NULL, '{\"type\":\"loan_given\",\"reference_no\":\"LOAN-20260915-NGDFOW\",\"amount\":25000,\"date\":\"2026-09-07\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:52:42', '2026-09-15 11:52:42'),
-(12, 1, 'App\\Models\\FinancialTransaction', 12, 'created', NULL, '{\"type\":\"loan_repayment_received\",\"reference_no\":\"LOAN-20260915-IQ8A1Y\",\"amount\":10000,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:53:50', '2026-09-15 11:53:50'),
-(13, 1, 'App\\Models\\FinancialTransaction', 13, 'created', NULL, '{\"type\":\"loan_taken\",\"reference_no\":\"LOAN-20260915-YNGIWS\",\"amount\":40000,\"date\":\"2026-09-10\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:54:45', '2026-09-15 11:54:45'),
-(14, 1, 'App\\Models\\FinancialTransaction', 14, 'created', NULL, '{\"type\":\"loan_repayment_paid\",\"reference_no\":\"LOAN-20260915-DDRSGZ\",\"amount\":5000,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 11:55:13', '2026-09-15 11:55:13'),
-(15, 1, 'App\\Models\\FinancialTransaction', 15, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-GQEEIU\",\"amount\":3500,\"date\":\"2026-09-07\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:09:58', '2026-09-15 12:09:58'),
-(16, 1, 'App\\Models\\FinancialTransaction', 16, 'created', NULL, '{\"type\":\"reversal\",\"reference_no\":\"REVE-20260915-W8U0UN\",\"amount\":3500,\"date\":\"2026-09-15\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:11:27', '2026-09-15 12:11:27'),
-(17, 1, 'App\\Models\\FinancialTransaction', 17, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-FMQEBR\",\"amount\":3500,\"date\":\"2026-09-07\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:12:03', '2026-09-15 12:12:03'),
-(18, 1, 'App\\Models\\FinancialTransaction', 18, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260915-T1OOFS\",\"amount\":12000,\"date\":\"2026-09-08\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
-(19, 1, 'App\\Models\\FinancialTransaction', 19, 'created', NULL, '{\"type\":\"expense\",\"reference_no\":\"EXPE-20260916-LQJTHU\",\"amount\":5000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36', '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
-(20, 1, 'App\\Models\\FinancialTransaction', 20, 'created', NULL, '{\"type\":\"committee_payout\",\"reference_no\":\"COMM-20260916-AO4BXI\",\"amount\":40000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
-(21, 1, 'App\\Models\\FinancialTransaction', 21, 'created', NULL, '{\"type\":\"committee_payout\",\"reference_no\":\"COMM-20260916-RRQEOA\",\"amount\":10000,\"date\":\"2026-09-16\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', '2026-09-16 13:51:45', '2026-09-16 13:51:45');
 
 -- --------------------------------------------------------
 
@@ -115,15 +81,6 @@ CREATE TABLE `budgets` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `budgets`
---
-
-INSERT INTO `budgets` (`id`, `user_id`, `category_id`, `currency_id`, `period_start`, `period_end`, `amount`, `alert_percent`, `last_alert_level`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 1, 5, 1, '2026-09-01', '2026-09-30', 20000.0000, 80, 0, 1, '2026-09-15 11:56:17', '2026-09-15 11:56:17'),
-(2, 1, 6, 1, '2026-09-01', '2026-09-30', 15000.0000, 80, 2, 1, '2026-09-15 11:56:29', '2026-09-15 12:13:43'),
-(3, 1, 11, 1, '2026-09-01', '2026-09-30', 10000.0000, 80, 0, 1, '2026-09-15 11:56:39', '2026-09-15 11:56:39');
 
 -- --------------------------------------------------------
 
@@ -169,24 +126,6 @@ CREATE TABLE `categories` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `categories`
---
-
-INSERT INTO `categories` (`id`, `user_id`, `ledger_account_id`, `parent_id`, `type`, `name`, `icon`, `color`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 1, 8, NULL, 'income', 'Salary', 'payments', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(2, 1, 9, NULL, 'income', 'Freelancing', 'work', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(3, 1, 10, NULL, 'income', 'Business Income', 'business_center', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(4, 1, 11, NULL, 'income', 'Other Income', 'add_circle', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(5, 1, 12, NULL, 'expense', 'Food & Groceries', 'restaurant', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(6, 1, 13, NULL, 'expense', 'Transport & Fuel', 'directions_car', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(7, 1, 14, NULL, 'expense', 'Home & Utilities', 'home', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(8, 1, 15, NULL, 'expense', 'Health', 'medical_services', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(9, 1, 16, NULL, 'expense', 'Education', 'school', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(10, 1, 17, NULL, 'expense', 'Shopping', 'shopping_bag', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(11, 1, 18, NULL, 'expense', 'Entertainment', 'movie', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(12, 1, 19, NULL, 'expense', 'Other Expense', 'more_horiz', NULL, 1, '2026-09-15 11:42:24', '2026-09-15 11:42:24');
-
 -- --------------------------------------------------------
 
 --
@@ -211,13 +150,6 @@ CREATE TABLE `committees` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `committees`
---
-
-INSERT INTO `committees` (`id`, `user_id`, `currency_id`, `name`, `contribution_amount`, `total_members`, `total_pool_amount`, `frequency`, `start_date`, `status`, `my_role`, `my_person_id`, `notes`, `created_at`, `updated_at`) VALUES
-(2, 1, 1, 'Office Monthly Committee 2026', 5000.00, 2, 10000.00, 'monthly', '2026-09-14', 'active', 'member', 2, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
-
 -- --------------------------------------------------------
 
 --
@@ -235,14 +167,6 @@ CREATE TABLE `committee_members` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `committee_members`
---
-
-INSERT INTO `committee_members` (`id`, `committee_id`, `person_id`, `name`, `slot_number`, `payout_round_no`, `notes`, `created_at`, `updated_at`) VALUES
-(3, 2, 2, 'Ahmed', 1, 1, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29'),
-(4, 2, 1, 'Ali Khan', 2, 2, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
 
 -- --------------------------------------------------------
 
@@ -263,16 +187,6 @@ CREATE TABLE `committee_payments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `committee_payments`
---
-
-INSERT INTO `committee_payments` (`id`, `committee_round_id`, `committee_member_id`, `amount`, `status`, `paid_at`, `account_id`, `financial_transaction_id`, `notes`, `created_at`, `updated_at`) VALUES
-(5, 3, 3, 5000.00, 'paid', '2026-09-16', NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:51:00'),
-(6, 3, 4, 5000.00, 'paid', '2026-09-16', NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:51:05'),
-(7, 4, 3, 5000.00, 'pending', NULL, NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29'),
-(8, 4, 4, 5000.00, 'pending', NULL, NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
 
 -- --------------------------------------------------------
 
@@ -298,14 +212,6 @@ CREATE TABLE `committee_rounds` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `committee_rounds`
---
-
-INSERT INTO `committee_rounds` (`id`, `committee_id`, `round_number`, `due_date`, `winner_member_id`, `total_expected`, `total_collected`, `payout_amount`, `payout_status`, `payout_date`, `payout_account_id`, `payout_transaction_id`, `notes`, `created_at`, `updated_at`) VALUES
-(3, 2, 1, '2026-09-14', 3, 10000.00, 10000.00, 10000.00, 'paid', '2026-09-16', 20, 21, NULL, '2026-09-16 13:50:29', '2026-09-16 13:51:45'),
-(4, 2, 2, '2026-10-14', 4, 10000.00, 0.00, 10000.00, 'pending', NULL, NULL, NULL, NULL, '2026-09-16 13:50:29', '2026-09-16 13:50:29');
-
 -- --------------------------------------------------------
 
 --
@@ -329,12 +235,28 @@ CREATE TABLE `currencies` (
 --
 
 INSERT INTO `currencies` (`id`, `code`, `name`, `symbol`, `decimal_places`, `exchange_rate`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'PKR', 'Pakistani Rupee', 'Rs', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(2, 'USD', 'US Dollar', '$', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(3, 'EUR', 'Euro', '€', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(4, 'GBP', 'Pound Sterling', '£', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(5, 'AED', 'UAE Dirham', 'AED', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00'),
-(6, 'SAR', 'Saudi Riyal', 'SAR', 2, 1.000000, 1, '2026-09-15 11:42:00', '2026-09-15 11:42:00');
+(1, 'PKR', 'Pakistani Rupee', 'Rs', 2, 1.000000, 1, '2026-09-18 07:57:18', '2026-09-18 07:57:18'),
+(2, 'USD', 'US Dollar', '$', 2, 1.000000, 1, '2026-09-18 07:57:18', '2026-09-18 07:57:18'),
+(3, 'EUR', 'Euro', '€', 2, 1.000000, 1, '2026-09-18 07:57:18', '2026-09-18 07:57:18'),
+(4, 'GBP', 'Pound Sterling', '£', 2, 1.000000, 1, '2026-09-18 07:57:18', '2026-09-18 07:57:18'),
+(5, 'AED', 'UAE Dirham', 'AED', 2, 1.000000, 1, '2026-09-18 07:57:18', '2026-09-18 07:57:18'),
+(6, 'SAR', 'Saudi Riyal', 'SAR', 2, 1.000000, 1, '2026-09-18 07:57:18', '2026-09-18 07:57:18');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exchange_rate_history`
+--
+
+CREATE TABLE `exchange_rate_history` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `currency_id` bigint(20) UNSIGNED NOT NULL,
+  `base_currency_id` bigint(20) UNSIGNED NOT NULL,
+  `rate_date` date NOT NULL,
+  `rate` decimal(20,8) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -374,6 +296,9 @@ CREATE TABLE `financial_transactions` (
   `reference_no` varchar(60) NOT NULL,
   `transaction_date` date NOT NULL,
   `amount` decimal(20,4) NOT NULL,
+  `original_amount` decimal(20,4) DEFAULT NULL,
+  `original_currency_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `exchange_rate` decimal(20,8) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `notes` text DEFAULT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'posted',
@@ -381,33 +306,6 @@ CREATE TABLE `financial_transactions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `financial_transactions`
---
-
-INSERT INTO `financial_transactions` (`id`, `user_id`, `currency_id`, `source_account_id`, `destination_account_id`, `category_id`, `person_id`, `loan_id`, `savings_goal_id`, `recurring_transaction_id`, `reversal_of_id`, `type`, `reference_no`, `transaction_date`, `amount`, `description`, `notes`, `status`, `metadata`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, NULL, 20, NULL, NULL, NULL, NULL, NULL, NULL, 'opening_balance', 'OPEN-20260915-IRBCVC', '2026-08-31', 150000.0000, 'Opening balance - HBL Bank', NULL, 'posted', NULL, '2026-09-15 11:43:04', '2026-09-15 11:43:04'),
-(2, 1, 1, NULL, 21, NULL, NULL, NULL, NULL, NULL, NULL, 'opening_balance', 'OPEN-20260915-GTAGU2', '2026-09-15', 80000.0000, 'Opening balance - Meezan Bank', NULL, 'posted', NULL, '2026-09-15 11:43:20', '2026-09-15 11:43:20'),
-(3, 1, 1, NULL, 22, NULL, NULL, NULL, NULL, NULL, NULL, 'opening_balance', 'OPEN-20260915-UI4GKW', '2026-09-15', 20000.0000, 'Opening balance - Cash in Hand', NULL, 'posted', NULL, '2026-09-15 11:44:06', '2026-09-15 11:44:06'),
-(4, 1, 1, NULL, 23, NULL, NULL, NULL, NULL, NULL, NULL, 'opening_balance', 'OPEN-20260915-LY0WJ7', '2026-09-15', 50000.0000, 'Opening balance - Savings', NULL, 'posted', NULL, '2026-09-15 11:44:22', '2026-09-15 11:44:22'),
-(5, 1, 1, NULL, 20, 1, NULL, NULL, NULL, NULL, NULL, 'income', 'INCO-20260915-BBDA9L', '2026-09-01', 120000.0000, 'September Salary', NULL, 'posted', NULL, '2026-09-15 11:45:27', '2026-09-15 11:45:27'),
-(6, 1, 1, 20, NULL, 12, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-Y4XV1S', '2026-09-02', 30000.0000, 'September house rent', NULL, 'posted', NULL, '2026-09-15 11:47:21', '2026-09-15 11:47:21'),
-(7, 1, 1, 22, NULL, 12, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-1ZKWLG', '2026-09-03', 8000.0000, 'Monthly groceries', NULL, 'posted', NULL, '2026-09-15 11:48:01', '2026-09-15 11:48:01'),
-(8, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-XMNFIA', '2026-09-04', 5000.0000, 'Car fuel', NULL, 'posted', NULL, '2026-09-15 11:48:30', '2026-09-15 11:48:30'),
-(9, 1, 1, 20, 21, NULL, NULL, NULL, NULL, NULL, NULL, 'transfer', 'TRAN-20260915-AS7AAP', '2026-09-05', 20000.0000, 'Transfer to Meezan', NULL, 'posted', NULL, '2026-09-15 11:49:04', '2026-09-15 11:49:04'),
-(10, 1, 1, 20, 23, NULL, NULL, NULL, NULL, NULL, NULL, 'transfer', 'TRAN-20260915-VHVMXY', '2026-09-06', 15000.0000, NULL, NULL, 'posted', NULL, '2026-09-15 11:49:37', '2026-09-15 11:49:37'),
-(11, 1, 1, 20, NULL, NULL, 1, 1, NULL, NULL, NULL, 'loan_given', 'LOAN-20260915-NGDFOW', '2026-09-07', 25000.0000, 'Loan given to Ali Khan', 'Personal loan to Ali', 'posted', NULL, '2026-09-15 11:52:42', '2026-09-15 11:52:42'),
-(12, 1, 1, NULL, 20, NULL, 1, 1, NULL, NULL, NULL, 'loan_repayment_received', 'LOAN-20260915-IQ8A1Y', '2026-09-15', 10000.0000, 'Loan repayment - Ali Khan', NULL, 'posted', NULL, '2026-09-15 11:53:50', '2026-09-15 11:53:50'),
-(13, 1, 1, NULL, 21, NULL, 2, 2, NULL, NULL, NULL, 'loan_taken', 'LOAN-20260915-YNGIWS', '2026-09-10', 40000.0000, 'Loan taken from Ahmed', NULL, 'posted', NULL, '2026-09-15 11:54:45', '2026-09-15 11:54:45'),
-(14, 1, 1, 21, NULL, NULL, 2, 2, NULL, NULL, NULL, 'loan_repayment_paid', 'LOAN-20260915-DDRSGZ', '2026-09-15', 5000.0000, 'Loan repayment - Ahmed', NULL, 'posted', NULL, '2026-09-15 11:55:13', '2026-09-15 11:55:13'),
-(15, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-GQEEIU', '2026-09-07', 3500.0000, NULL, NULL, 'reversed', NULL, '2026-09-15 12:09:58', '2026-09-15 12:11:27'),
-(16, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 15, 'reversal', 'REVE-20260915-W8U0UN', '2026-09-15', 3500.0000, 'Reversal of EXPE-20260915-GQEEIU', NULL, 'posted', '{\"original_type\":\"expense\"}', '2026-09-15 12:11:27', '2026-09-15 12:11:27'),
-(17, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-FMQEBR', '2026-09-07', 3500.0000, NULL, NULL, 'posted', NULL, '2026-09-15 12:12:03', '2026-09-15 12:12:03'),
-(18, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260915-T1OOFS', '2026-09-08', 12000.0000, NULL, NULL, 'posted', NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
-(19, 1, 1, 20, NULL, 6, NULL, NULL, NULL, NULL, NULL, 'expense', 'EXPE-20260916-LQJTHU', '2026-09-16', 5000.0000, NULL, NULL, 'posted', NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
-(20, 1, 1, 20, NULL, NULL, 2, NULL, NULL, NULL, NULL, 'committee_payout', 'COMM-20260916-AO4BXI', '2026-09-16', 40000.0000, 'Committee payout disbursed: Office Monthly Committee (Round 1 - Winner: Ahmed)', NULL, 'posted', NULL, '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
-(21, 1, 1, 20, NULL, NULL, 2, NULL, NULL, NULL, NULL, 'committee_payout', 'COMM-20260916-RRQEOA', '2026-09-16', 10000.0000, 'Committee payout disbursed: Office Monthly Committee 2026 (Round 1 - Winner: Ahmed)', NULL, 'posted', NULL, '2026-09-16 13:51:45', '2026-09-16 13:51:45');
 
 -- --------------------------------------------------------
 
@@ -419,15 +317,6 @@ CREATE TABLE `financial_transaction_tag` (
   `financial_transaction_id` bigint(20) UNSIGNED NOT NULL,
   `tag_id` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `financial_transaction_tag`
---
-
-INSERT INTO `financial_transaction_tag` (`financial_transaction_id`, `tag_id`) VALUES
-(15, 1),
-(17, 1),
-(18, 1);
 
 -- --------------------------------------------------------
 
@@ -491,35 +380,6 @@ CREATE TABLE `ledger_accounts` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `ledger_accounts`
---
-
-INSERT INTO `ledger_accounts` (`id`, `user_id`, `currency_id`, `parent_id`, `kind`, `type`, `system_code`, `name`, `institution`, `last_four`, `icon`, `color`, `is_system`, `include_in_net_worth`, `is_archived`, `metadata`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, NULL, 'equity', 'opening_balance_equity', NULL, 'Opening Balance Equity', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(2, 1, 1, NULL, 'asset', 'loan_receivable', NULL, 'Loans Receivable', NULL, NULL, NULL, NULL, 1, 1, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(3, 1, 1, NULL, 'liability', 'loan_payable', NULL, 'Loans Payable', NULL, NULL, NULL, NULL, 1, 1, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(4, 1, 1, NULL, 'income', 'interest_income', NULL, 'Interest Income', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(5, 1, 1, NULL, 'expense', 'interest_expense', NULL, 'Interest Expense', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(6, 1, 1, NULL, 'equity', 'adjustment_equity', NULL, 'Balance Adjustment', NULL, NULL, NULL, NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(7, 1, 1, NULL, 'asset', 'cash', NULL, 'Cash in Hand', NULL, NULL, 'wallet', NULL, 0, 0, 1, NULL, '2026-09-15 11:42:24', '2026-09-16 14:49:24'),
-(8, 1, 1, NULL, 'income', 'category', NULL, 'Salary', NULL, NULL, 'payments', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(9, 1, 1, NULL, 'income', 'category', NULL, 'Freelancing', NULL, NULL, 'work', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(10, 1, 1, NULL, 'income', 'category', NULL, 'Business Income', NULL, NULL, 'business_center', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(11, 1, 1, NULL, 'income', 'category', NULL, 'Other Income', NULL, NULL, 'add_circle', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(12, 1, 1, NULL, 'expense', 'category', NULL, 'Food & Groceries', NULL, NULL, 'restaurant', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(13, 1, 1, NULL, 'expense', 'category', NULL, 'Transport & Fuel', NULL, NULL, 'directions_car', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(14, 1, 1, NULL, 'expense', 'category', NULL, 'Home & Utilities', NULL, NULL, 'home', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(15, 1, 1, NULL, 'expense', 'category', NULL, 'Health', NULL, NULL, 'medical_services', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(16, 1, 1, NULL, 'expense', 'category', NULL, 'Education', NULL, NULL, 'school', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(17, 1, 1, NULL, 'expense', 'category', NULL, 'Shopping', NULL, NULL, 'shopping_bag', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(18, 1, 1, NULL, 'expense', 'category', NULL, 'Entertainment', NULL, NULL, 'movie', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(19, 1, 1, NULL, 'expense', 'category', NULL, 'Other Expense', NULL, NULL, 'more_horiz', NULL, 1, 0, 0, NULL, '2026-09-15 11:42:24', '2026-09-15 11:42:24'),
-(20, 1, 1, NULL, 'asset', 'bank', NULL, 'HBL Bank', NULL, NULL, NULL, NULL, 0, 1, 0, NULL, '2026-09-15 11:43:04', '2026-09-15 11:43:04'),
-(21, 1, 1, NULL, 'asset', 'bank', NULL, 'Meezan Bank', NULL, NULL, NULL, NULL, 0, 1, 0, NULL, '2026-09-15 11:43:20', '2026-09-15 11:43:20'),
-(22, 1, 1, NULL, 'asset', 'cash', NULL, 'Cash in Hand', NULL, NULL, NULL, NULL, 0, 1, 0, NULL, '2026-09-15 11:44:06', '2026-09-15 11:44:06'),
-(23, 1, 1, NULL, 'asset', 'savings', NULL, 'Savings', NULL, NULL, NULL, NULL, 0, 1, 0, NULL, '2026-09-15 11:44:22', '2026-09-15 11:44:22');
-
 -- --------------------------------------------------------
 
 --
@@ -546,14 +406,6 @@ CREATE TABLE `loans` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `loans`
---
-
-INSERT INTO `loans` (`id`, `user_id`, `person_id`, `currency_id`, `ledger_account_id`, `direction`, `title`, `principal`, `outstanding_principal`, `interest_rate`, `interest_type`, `start_date`, `due_date`, `status`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 1, 2, 'given', NULL, 25000.0000, 15000.0000, 0.0000, 'none', '2026-09-07', '2026-09-12', 'active', 'Personal loan to Ali', '2026-09-15 11:52:42', '2026-09-15 11:53:50'),
-(2, 1, 2, 1, 3, 'taken', NULL, 40000.0000, 35000.0000, 0.0000, 'none', '2026-09-10', '2026-10-15', 'active', NULL, '2026-09-15 11:54:45', '2026-09-15 11:55:13');
-
 -- --------------------------------------------------------
 
 --
@@ -570,14 +422,6 @@ CREATE TABLE `loan_payments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `loan_payments`
---
-
-INSERT INTO `loan_payments` (`id`, `loan_id`, `financial_transaction_id`, `principal_amount`, `interest_amount`, `paid_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 12, 10000.0000, 0.0000, '2026-09-15', '2026-09-15 11:53:50', '2026-09-15 11:53:50'),
-(2, 2, 14, 5000.0000, 0.0000, '2026-09-15', '2026-09-15 11:55:13', '2026-09-15 11:55:13');
 
 -- --------------------------------------------------------
 
@@ -604,8 +448,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (6, '2026_09_15_000003_create_finance_transactions', 1),
 (7, '2026_09_15_000004_create_finance_support', 1),
 (8, '2026_09_15_161036_add_system_code_to_ledger_accounts_table.', 1),
-(9, '2026_09_16_000001_create_committees_tables', 2),
-(10, '2026_09_16_000002_add_exchange_rate_to_currencies_table', 3);
+(9, '2026_09_16_000001_create_committees_tables', 1),
+(10, '2026_09_16_000002_add_exchange_rate_to_currencies_table', 1),
+(11, '2026_09_17_143200_add_original_amount_to_financial_transactions', 1),
+(12, '2026_09_17_200000_create_exchange_rate_history', 1);
 
 -- --------------------------------------------------------
 
@@ -623,13 +469,6 @@ CREATE TABLE `notifications` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `notifications`
---
-
-INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `data`, `read_at`, `created_at`, `updated_at`) VALUES
-('6a5923b0-8f51-47ad-9cca-afb2dc97f1e9', 'App\\Notifications\\FinanceReminderNotification', 'App\\Models\\User', 1, '{\"title\":\"Budget exceeded\",\"message\":\"You have exceeded your Transport & Fuel budget (137% used).\",\"payload\":{\"budget_id\":2,\"percent\":136.67}}', NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43');
 
 -- --------------------------------------------------------
 
@@ -660,14 +499,6 @@ CREATE TABLE `people` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `people`
---
-
-INSERT INTO `people` (`id`, `user_id`, `name`, `phone`, `email`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Ali Khan', '0300xxxxxxx', NULL, NULL, '2026-09-15 11:51:44', '2026-09-15 11:51:44'),
-(2, 1, 'Ahmed', NULL, NULL, NULL, '2026-09-15 11:54:15', '2026-09-15 11:54:15');
-
 -- --------------------------------------------------------
 
 --
@@ -694,14 +525,6 @@ CREATE TABLE `recurring_transactions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `recurring_transactions`
---
-
-INSERT INTO `recurring_transactions` (`id`, `user_id`, `currency_id`, `source_account_id`, `destination_account_id`, `category_id`, `person_id`, `type`, `title`, `amount`, `frequency`, `interval`, `next_run_at`, `mode`, `is_active`, `payload`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 20, NULL, 11, NULL, 'expense', 'Internet Bill', 4500.0000, 'monthly', 5, '2026-10-05 07:00:00', 'remind', 1, NULL, '2026-09-15 11:57:57', '2026-09-15 11:57:57'),
-(2, 1, 1, NULL, 20, 1, NULL, 'income', 'Salary', 120000.0000, 'monthly', 1, '2026-10-01 12:00:00', 'remind', 1, NULL, '2026-09-15 11:58:35', '2026-09-15 11:58:35');
 
 -- --------------------------------------------------------
 
@@ -742,13 +565,6 @@ CREATE TABLE `savings_goals` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `savings_goals`
---
-
-INSERT INTO `savings_goals` (`id`, `user_id`, `account_id`, `currency_id`, `title`, `target_amount`, `allocated_amount`, `target_date`, `icon`, `color`, `is_completed`, `created_at`, `updated_at`) VALUES
-(1, 1, 23, 1, 'Emergency Fund', 500000.0000, 0.0000, '2027-12-31', NULL, NULL, 0, '2026-09-15 11:50:17', '2026-09-15 11:50:17');
-
 -- --------------------------------------------------------
 
 --
@@ -769,8 +585,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('lZ5BhG6GtVLY1tVaV6GDZJ5HFaoDMUGYSjV9gtnB', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJnU3BBdTNGNlNaZU9ha1BpRmQxcG1wWXh3eVR3b0xoQjNLSG1OYlVFIiwidXJsIjpbXSwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMToxOTk5XC9hamF4XC9yZXBvcnRzXC9idXJuLXJhdGU/ZnJvbT0yMDI2LTA5LTAxJnRvPTIwMjYtMDktMzAiLCJyb3V0ZSI6ImFqYXguIn0sIl9mbGFzaCI6eyJvbGQiOltdLCJuZXciOltdfSwibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjF9', 1789570876),
-('z0aZ3mNp8Np2zkrRnHXJTeaJGveqeQfy8FAKr8pS', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJqaXFiNFBCSjQwTkZBcVNCMkt4cFVjZDdyQ3BJUm5oZERRcG5hZWFMIiwidXJsIjpbXSwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMToxOTk5XC9hamF4XC9yZXBvcnRzXC9idXJuLXJhdGU/ZnJvbT0yMDI2LTA5LTAxJnRvPTIwMjYtMDktMzAiLCJyb3V0ZSI6ImFqYXguIn0sIl9mbGFzaCI6eyJvbGQiOltdLCJuZXciOltdfSwibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjF9', 1789630108);
+('lFms2bbJhFnsu4aNOdx7YckCcLOeOedAuJKnO4A5', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36', 'eyJfdG9rZW4iOiJMWWV1V1lYSHZhbE1nVUJFUnFDQ2F6QkRvbW9LZE1yS2NUQXBQTnMyIiwidXJsIjp7ImludGVuZGVkIjoiaHR0cDpcL1wvMTI3LjAuMC4xOjE5OTlcL2xvYW5zIn0sIl9wcmV2aW91cyI6eyJ1cmwiOiJodHRwOlwvXC8xMjcuMC4wLjE6MTk5OVwvcmVnaXN0ZXIiLCJyb3V0ZSI6InJlZ2lzdGVyIn0sIl9mbGFzaCI6eyJvbGQiOltdLCJuZXciOltdfX0=', 1789726768);
 
 -- --------------------------------------------------------
 
@@ -786,13 +601,6 @@ CREATE TABLE `tags` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `tags`
---
-
-INSERT INTO `tags` (`id`, `user_id`, `name`, `color`, `created_at`, `updated_at`) VALUES
-(1, 1, 'car', '#3dd680', '2026-09-15 12:08:12', '2026-09-15 12:08:12');
 
 -- --------------------------------------------------------
 
@@ -812,54 +620,6 @@ CREATE TABLE `transaction_entries` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `transaction_entries`
---
-
-INSERT INTO `transaction_entries` (`id`, `financial_transaction_id`, `ledger_account_id`, `loan_id`, `debit`, `credit`, `memo`, `created_at`, `updated_at`) VALUES
-(1, 1, 20, NULL, 150000.0000, 0.0000, NULL, '2026-09-15 11:43:04', '2026-09-15 11:43:04'),
-(2, 1, 1, NULL, 0.0000, 150000.0000, NULL, '2026-09-15 11:43:04', '2026-09-15 11:43:04'),
-(3, 2, 21, NULL, 80000.0000, 0.0000, NULL, '2026-09-15 11:43:20', '2026-09-15 11:43:20'),
-(4, 2, 1, NULL, 0.0000, 80000.0000, NULL, '2026-09-15 11:43:20', '2026-09-15 11:43:20'),
-(5, 3, 22, NULL, 20000.0000, 0.0000, NULL, '2026-09-15 11:44:06', '2026-09-15 11:44:06'),
-(6, 3, 1, NULL, 0.0000, 20000.0000, NULL, '2026-09-15 11:44:06', '2026-09-15 11:44:06'),
-(7, 4, 23, NULL, 50000.0000, 0.0000, NULL, '2026-09-15 11:44:22', '2026-09-15 11:44:22'),
-(8, 4, 1, NULL, 0.0000, 50000.0000, NULL, '2026-09-15 11:44:22', '2026-09-15 11:44:22'),
-(9, 5, 20, NULL, 120000.0000, 0.0000, NULL, '2026-09-15 11:45:27', '2026-09-15 11:45:27'),
-(10, 5, 8, NULL, 0.0000, 120000.0000, NULL, '2026-09-15 11:45:27', '2026-09-15 11:45:27'),
-(11, 6, 19, NULL, 30000.0000, 0.0000, NULL, '2026-09-15 11:47:21', '2026-09-15 11:47:21'),
-(12, 6, 20, NULL, 0.0000, 30000.0000, NULL, '2026-09-15 11:47:21', '2026-09-15 11:47:21'),
-(13, 7, 19, NULL, 8000.0000, 0.0000, NULL, '2026-09-15 11:48:01', '2026-09-15 11:48:01'),
-(14, 7, 22, NULL, 0.0000, 8000.0000, NULL, '2026-09-15 11:48:01', '2026-09-15 11:48:01'),
-(15, 8, 13, NULL, 5000.0000, 0.0000, NULL, '2026-09-15 11:48:30', '2026-09-15 11:48:30'),
-(16, 8, 20, NULL, 0.0000, 5000.0000, NULL, '2026-09-15 11:48:30', '2026-09-15 11:48:30'),
-(17, 9, 21, NULL, 20000.0000, 0.0000, NULL, '2026-09-15 11:49:04', '2026-09-15 11:49:04'),
-(18, 9, 20, NULL, 0.0000, 20000.0000, NULL, '2026-09-15 11:49:04', '2026-09-15 11:49:04'),
-(19, 10, 23, NULL, 15000.0000, 0.0000, NULL, '2026-09-15 11:49:37', '2026-09-15 11:49:37'),
-(20, 10, 20, NULL, 0.0000, 15000.0000, NULL, '2026-09-15 11:49:37', '2026-09-15 11:49:37'),
-(21, 11, 2, 1, 25000.0000, 0.0000, NULL, '2026-09-15 11:52:42', '2026-09-15 11:52:42'),
-(22, 11, 20, NULL, 0.0000, 25000.0000, NULL, '2026-09-15 11:52:42', '2026-09-15 11:52:42'),
-(23, 12, 20, NULL, 10000.0000, 0.0000, NULL, '2026-09-15 11:53:50', '2026-09-15 11:53:50'),
-(24, 12, 2, 1, 0.0000, 10000.0000, NULL, '2026-09-15 11:53:50', '2026-09-15 11:53:50'),
-(25, 13, 21, NULL, 40000.0000, 0.0000, NULL, '2026-09-15 11:54:45', '2026-09-15 11:54:45'),
-(26, 13, 3, 2, 0.0000, 40000.0000, NULL, '2026-09-15 11:54:45', '2026-09-15 11:54:45'),
-(27, 14, 3, 2, 5000.0000, 0.0000, NULL, '2026-09-15 11:55:13', '2026-09-15 11:55:13'),
-(28, 14, 21, NULL, 0.0000, 5000.0000, NULL, '2026-09-15 11:55:13', '2026-09-15 11:55:13'),
-(29, 15, 13, NULL, 3500.0000, 0.0000, NULL, '2026-09-15 12:09:58', '2026-09-15 12:09:58'),
-(30, 15, 20, NULL, 0.0000, 3500.0000, NULL, '2026-09-15 12:09:58', '2026-09-15 12:09:58'),
-(31, 16, 13, NULL, 0.0000, 3500.0000, NULL, '2026-09-15 12:11:27', '2026-09-15 12:11:27'),
-(32, 16, 20, NULL, 3500.0000, 0.0000, NULL, '2026-09-15 12:11:27', '2026-09-15 12:11:27'),
-(33, 17, 13, NULL, 3500.0000, 0.0000, NULL, '2026-09-15 12:12:03', '2026-09-15 12:12:03'),
-(34, 17, 20, NULL, 0.0000, 3500.0000, NULL, '2026-09-15 12:12:03', '2026-09-15 12:12:03'),
-(35, 18, 13, NULL, 12000.0000, 0.0000, NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
-(36, 18, 20, NULL, 0.0000, 12000.0000, NULL, '2026-09-15 12:13:43', '2026-09-15 12:13:43'),
-(37, 19, 13, NULL, 5000.0000, 0.0000, NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
-(38, 19, 20, NULL, 0.0000, 5000.0000, NULL, '2026-09-16 09:13:12', '2026-09-16 09:13:12'),
-(39, 20, 1, NULL, 40000.0000, 0.0000, NULL, '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
-(40, 20, 20, NULL, 0.0000, 40000.0000, NULL, '2026-09-16 13:42:45', '2026-09-16 13:42:45'),
-(41, 21, 1, NULL, 10000.0000, 0.0000, NULL, '2026-09-16 13:51:45', '2026-09-16 13:51:45'),
-(42, 21, 20, NULL, 0.0000, 10000.0000, NULL, '2026-09-16 13:51:45', '2026-09-16 13:51:45');
-
 -- --------------------------------------------------------
 
 --
@@ -876,13 +636,6 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Shayan Ahmad', 'shayan@gmail.com', NULL, '$2y$12$/nPv/eFyTRGvAozFhKkZt.0OZSNcR/Vx2JAPSThM.qqFF6mRUpRXa', 'f2rvfgInxvUDUmbgBQDWeX3wti4cHUf46hTldXCWwfd6jhMFJ9jD5VQvuwz3', '2026-09-15 11:42:24', '2026-09-15 11:42:24');
 
 -- --------------------------------------------------------
 
@@ -901,13 +654,6 @@ CREATE TABLE `user_settings` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `user_settings`
---
-
-INSERT INTO `user_settings` (`id`, `user_id`, `base_currency_id`, `theme`, `locale`, `daily_reminder_time`, `preferences`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'light', 'en', NULL, NULL, '2026-09-15 11:42:24', '2026-09-16 14:08:57');
 
 --
 -- Indexes for dumped tables
@@ -1009,6 +755,15 @@ ALTER TABLE `currencies`
   ADD UNIQUE KEY `currencies_code_unique` (`code`);
 
 --
+-- Indexes for table `exchange_rate_history`
+--
+ALTER TABLE `exchange_rate_history`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `exch_rate_hist_unique` (`currency_id`,`base_currency_id`,`rate_date`),
+  ADD KEY `exchange_rate_history_base_currency_id_foreign` (`base_currency_id`),
+  ADD KEY `exch_rate_hist_currency_date_idx` (`currency_id`,`rate_date`);
+
+--
 -- Indexes for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -1032,7 +787,8 @@ ALTER TABLE `financial_transactions`
   ADD KEY `financial_transactions_reversal_of_id_foreign` (`reversal_of_id`),
   ADD KEY `fin_tx_user_date_idx` (`user_id`,`transaction_date`),
   ADD KEY `fin_tx_user_type_date_idx` (`user_id`,`type`,`transaction_date`),
-  ADD KEY `fin_tx_user_status_idx` (`user_id`,`status`);
+  ADD KEY `fin_tx_user_status_idx` (`user_id`,`status`),
+  ADD KEY `financial_transactions_original_currency_id_foreign` (`original_currency_id`);
 
 --
 -- Indexes for table `financial_transaction_tag`
@@ -1187,55 +943,61 @@ ALTER TABLE `user_settings`
 -- AUTO_INCREMENT for table `attachments`
 --
 ALTER TABLE `attachments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `budgets`
 --
 ALTER TABLE `budgets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `committees`
 --
 ALTER TABLE `committees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `committee_members`
 --
 ALTER TABLE `committee_members`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `committee_payments`
 --
 ALTER TABLE `committee_payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `committee_rounds`
 --
 ALTER TABLE `committee_rounds`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `currencies`
 --
 ALTER TABLE `currencies`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `exchange_rate_history`
+--
+ALTER TABLE `exchange_rate_history`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1247,7 +1009,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `financial_transactions`
 --
 ALTER TABLE `financial_transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -1259,37 +1021,37 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `ledger_accounts`
 --
 ALTER TABLE `ledger_accounts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `loans`
 --
 ALTER TABLE `loans`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `loan_payments`
 --
 ALTER TABLE `loan_payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `people`
 --
 ALTER TABLE `people`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `recurring_transactions`
 --
 ALTER TABLE `recurring_transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `savings_allocations`
@@ -1301,31 +1063,31 @@ ALTER TABLE `savings_allocations`
 -- AUTO_INCREMENT for table `savings_goals`
 --
 ALTER TABLE `savings_goals`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `transaction_entries`
 --
 ALTER TABLE `transaction_entries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_settings`
 --
 ALTER TABLE `user_settings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -1395,6 +1157,13 @@ ALTER TABLE `committee_rounds`
   ADD CONSTRAINT `committee_rounds_winner_member_id_foreign` FOREIGN KEY (`winner_member_id`) REFERENCES `committee_members` (`id`) ON DELETE SET NULL;
 
 --
+-- Constraints for table `exchange_rate_history`
+--
+ALTER TABLE `exchange_rate_history`
+  ADD CONSTRAINT `exchange_rate_history_base_currency_id_foreign` FOREIGN KEY (`base_currency_id`) REFERENCES `currencies` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `exchange_rate_history_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `financial_transactions`
 --
 ALTER TABLE `financial_transactions`
@@ -1402,6 +1171,7 @@ ALTER TABLE `financial_transactions`
   ADD CONSTRAINT `financial_transactions_currency_id_foreign` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
   ADD CONSTRAINT `financial_transactions_destination_account_id_foreign` FOREIGN KEY (`destination_account_id`) REFERENCES `ledger_accounts` (`id`),
   ADD CONSTRAINT `financial_transactions_loan_id_foreign` FOREIGN KEY (`loan_id`) REFERENCES `loans` (`id`),
+  ADD CONSTRAINT `financial_transactions_original_currency_id_foreign` FOREIGN KEY (`original_currency_id`) REFERENCES `currencies` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `financial_transactions_person_id_foreign` FOREIGN KEY (`person_id`) REFERENCES `people` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `financial_transactions_recurring_transaction_id_foreign` FOREIGN KEY (`recurring_transaction_id`) REFERENCES `recurring_transactions` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `financial_transactions_reversal_of_id_foreign` FOREIGN KEY (`reversal_of_id`) REFERENCES `financial_transactions` (`id`),

@@ -10,8 +10,8 @@ use App\Models\LedgerAccount;
 use App\Models\Loan;
 use App\Models\TransactionEntry;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
@@ -97,7 +97,8 @@ class ReportService
             ->join('financial_transactions', 'financial_transactions.id', '=', 'transaction_entries.financial_transaction_id')
             ->join('ledger_accounts', 'ledger_accounts.id', '=', 'transaction_entries.ledger_account_id')
             ->leftJoin('categories', function ($join) use ($user) {
-                $join->on('categories.ledger_account_id', '=', 'ledger_accounts.id')
+                $join
+                    ->on('categories.ledger_account_id', '=', 'ledger_accounts.id')
                     ->where('categories.user_id', '=', $user->id);
             })
             ->where('financial_transactions.user_id', $user->id)
@@ -115,7 +116,7 @@ class ReportService
             ->havingRaw('SUM(transaction_entries.debit - transaction_entries.credit) > 0')
             ->orderByDesc('total')
             ->get()
-            ->map(fn ($row) => [
+            ->map(fn($row) => [
                 'category_id' => $row->category_id,
                 'name' => $row->name,
                 'color' => $row->color,
@@ -233,10 +234,10 @@ class ReportService
 
         return [
             'given_total' => (float) $items
-                ->filter(fn ($loan) => $loan->direction->value === 'given' && $loan->status === 'active')
+                ->filter(fn($loan) => $loan->direction->value === 'given' && $loan->status === 'active')
                 ->sum('outstanding_principal'),
             'taken_total' => (float) $items
-                ->filter(fn ($loan) => $loan->direction->value === 'taken' && $loan->status === 'active')
+                ->filter(fn($loan) => $loan->direction->value === 'taken' && $loan->status === 'active')
                 ->sum('outstanding_principal'),
             'items' => $items,
             'currency' => [
@@ -313,7 +314,8 @@ class ReportService
             $debit = (float) ($entries?->total_debit ?? 0);
             $credit = (float) ($entries?->total_credit ?? 0);
 
-            if ($debit == 0 && $credit == 0) continue;
+            if ($debit == 0 && $credit == 0)
+                continue;
 
             $netBalance = $debit - $credit;
 
@@ -572,7 +574,8 @@ class ReportService
                 ->join('financial_transactions', 'financial_transactions.id', '=', 'transaction_entries.financial_transaction_id')
                 ->join('ledger_accounts', 'ledger_accounts.id', '=', 'transaction_entries.ledger_account_id')
                 ->leftJoin('categories', function ($join) use ($user) {
-                    $join->on('categories.ledger_account_id', '=', 'ledger_accounts.id')
+                    $join
+                        ->on('categories.ledger_account_id', '=', 'ledger_accounts.id')
                         ->where('categories.user_id', '=', $user->id);
                 })
                 ->where('financial_transactions.user_id', $user->id)
@@ -584,7 +587,7 @@ class ReportService
                 ->select([
                     'ledger_accounts.id',
                     DB::raw('COALESCE(categories.name, ledger_accounts.name) as name'),
-                    DB::raw($kind === LedgerAccountKind::Income->value 
+                    DB::raw($kind === LedgerAccountKind::Income->value
                         ? 'SUM(transaction_entries.credit - transaction_entries.debit) as total'
                         : 'SUM(transaction_entries.debit - transaction_entries.credit) as total')
                 ])
@@ -648,11 +651,9 @@ class ReportService
                 'current_income' => round($totalCurrentIncome, 2),
                 'prior_income' => round($totalPriorIncome, 2),
                 'income_change' => round($totalCurrentIncome - $totalPriorIncome, 2),
-
                 'current_expense' => round($totalCurrentExpense, 2),
                 'prior_expense' => round($totalPriorExpense, 2),
                 'expense_change' => round($totalCurrentExpense - $totalPriorExpense, 2),
-
                 'current_net' => round($netCurrentProfit, 2),
                 'prior_net' => round($netPriorProfit, 2),
                 'net_change' => round($netCurrentProfit - $netPriorProfit, 2),
@@ -690,7 +691,7 @@ class ReportService
         $calcNet = function ($tx) {
             return match ($tx->type->value) {
                 'loan_given', 'expense' => (float) $tx->amount,
-                'loan_taken', 'loan_repayment_received', 'income' => - (float) $tx->amount,
+                'loan_taken', 'loan_repayment_received', 'income' => -(float) $tx->amount,
                 default => 0.0,
             };
         };
@@ -708,7 +709,7 @@ class ReportService
         foreach ($transactions as $tx) {
             $debit = in_array($tx->type->value, ['loan_given', 'expense']) ? (float) $tx->amount : 0.0;
             $credit = in_array($tx->type->value, ['loan_taken', 'loan_repayment_received', 'income']) ? (float) $tx->amount : 0.0;
-            
+
             $totalDebit += $debit;
             $totalCredit += $credit;
             $runningBalance += ($debit - $credit);
@@ -759,7 +760,7 @@ class ReportService
         for ($m = 1; $m <= 12; $m++) {
             $start = sprintf('%04d-%02d-01', $year, $m);
             $end = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
-            
+
             $sum = $this->summary($user, $start, $end);
             $inc = $sum['income'];
             $exp = $sum['expense'];
@@ -802,11 +803,9 @@ class ReportService
                 'year_income' => round($yearIncome, 2),
                 'prior_year_income' => round($priorYearIncome, 2),
                 'income_growth_percent' => $priorYearIncome > 0 ? round((($yearIncome - $priorYearIncome) / $priorYearIncome) * 100, 1) : 0,
-
                 'year_expense' => round($yearExpense, 2),
                 'prior_year_expense' => round($priorYearExpense, 2),
                 'expense_growth_percent' => $priorYearExpense > 0 ? round((($yearExpense - $priorYearExpense) / $priorYearExpense) * 100, 1) : 0,
-
                 'year_net' => round($yearNet, 2),
                 'prior_year_net' => round($priorYearNet, 2),
                 'net_growth_percent' => $priorYearNet != 0 ? round((($yearNet - $priorYearNet) / abs($priorYearNet)) * 100, 1) : 0,
@@ -837,7 +836,7 @@ class ReportService
             ->where('kind', LedgerAccountKind::Asset)
             ->whereIn('type', ['cash', 'bank', 'wallet'])
             ->get()
-            ->sum(fn ($acc) => $acc->balance());
+            ->sum(fn($acc) => $acc->balance());
 
         $estimatedRunwayDays = $dailyAverage > 0 ? round($liquidBalance / $dailyAverage) : 999;
 
@@ -856,7 +855,7 @@ class ReportService
             ->orderByDesc('daily_total')
             ->limit(5)
             ->get()
-            ->map(fn ($r) => [
+            ->map(fn($r) => [
                 'date' => $r->date,
                 'total' => round((float) $r->daily_total, 2),
             ])

@@ -85,7 +85,7 @@ class CommitteeService
                     $dueDate->addWeeks($r - 1);
                 } elseif ($committee->frequency === 'biweekly') {
                     $dueDate->addWeeks(($r - 1) * 2);
-                } else { // monthly
+                } else {  // monthly
                     $dueDate->addMonths($r - 1);
                 }
 
@@ -204,8 +204,8 @@ class CommitteeService
                 // Role-based payout calculation:
                 // If Manager/Organizer: Manager manages the whole pool and disburses the entire pot amount.
                 // If Member: Member only pays their own contribution amount towards the payout round.
-                $actualDeductionAmount = ($committee->my_role === 'manager') 
-                    ? (float) $round->payout_amount 
+                $actualDeductionAmount = ($committee->my_role === 'manager')
+                    ? (float) $round->payout_amount
                     : (float) $committee->contribution_amount;
 
                 $tx = $this->ledger->post(
@@ -256,7 +256,7 @@ class CommitteeService
         $totalPoolValue = $committees->sum('total_pool_amount');
 
         $activeIds = $committees->where('status', 'active')->pluck('id');
-        $pendingPaymentsCount = CommitteePayment::whereHas('round', fn ($q) => $q->whereIn('committee_id', $activeIds))
+        $pendingPaymentsCount = CommitteePayment::whereHas('round', fn($q) => $q->whereIn('committee_id', $activeIds))
             ->where('status', 'pending')
             ->count();
 

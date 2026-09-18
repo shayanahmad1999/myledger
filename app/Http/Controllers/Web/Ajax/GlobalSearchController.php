@@ -25,11 +25,11 @@ class GlobalSearchController extends Controller
 
         // Transactions
         $transactions = FinancialTransaction::forUser($user->id)
-            ->where(fn ($query) => $query->whereRaw('LOWER(description) LIKE ?', [$needle])->orWhereRaw('LOWER(reference_no) LIKE ?', [$needle]))
+            ->where(fn($query) => $query->whereRaw('LOWER(description) LIKE ?', [$needle])->orWhereRaw('LOWER(reference_no) LIKE ?', [$needle]))
             ->latest('transaction_date')
             ->limit(5)
             ->get()
-            ->map(fn ($t) => [
+            ->map(fn($t) => [
                 'type' => 'Transaction',
                 'title' => $t->description ?: $t->reference_no,
                 'subtitle' => "{$t->transaction_date->toDateString()} · Amount: {$t->amount}",
@@ -42,7 +42,7 @@ class GlobalSearchController extends Controller
             ->whereRaw('LOWER(name) LIKE ?', [$needle])
             ->limit(5)
             ->get()
-            ->map(fn ($a) => [
+            ->map(fn($a) => [
                 'type' => 'Account',
                 'title' => $a->name,
                 'subtitle' => ucfirst($a->type->value) . ' · ' . $a->institution,
@@ -55,7 +55,7 @@ class GlobalSearchController extends Controller
             ->whereRaw('LOWER(name) LIKE ?', [$needle])
             ->limit(5)
             ->get()
-            ->map(fn ($c) => [
+            ->map(fn($c) => [
                 'type' => 'Committee',
                 'title' => $c->name,
                 'subtitle' => "{$c->total_members} Members · Pot: {$c->total_pool_amount}",
@@ -65,10 +65,10 @@ class GlobalSearchController extends Controller
 
         // People
         $people = Person::where('user_id', $user->id)
-            ->where(fn ($query) => $query->whereRaw('LOWER(name) LIKE ?', [$needle])->orWhereRaw('LOWER(email) LIKE ?', [$needle]))
+            ->where(fn($query) => $query->whereRaw('LOWER(name) LIKE ?', [$needle])->orWhereRaw('LOWER(email) LIKE ?', [$needle]))
             ->limit(5)
             ->get()
-            ->map(fn ($p) => [
+            ->map(fn($p) => [
                 'type' => 'Person',
                 'title' => $p->name,
                 'subtitle' => $p->email ?: $p->phone ?: 'Contact',
@@ -79,12 +79,12 @@ class GlobalSearchController extends Controller
         // Loans
         $loans = Loan::forUser($user->id)
             ->with('person')
-            ->where(fn ($query) => $query->whereRaw('LOWER(title) LIKE ?', [$needle])->orWhereHas('person', fn ($pq) => $pq->whereRaw('LOWER(name) LIKE ?', [$needle])))
+            ->where(fn($query) => $query->whereRaw('LOWER(title) LIKE ?', [$needle])->orWhereHas('person', fn($pq) => $pq->whereRaw('LOWER(name) LIKE ?', [$needle])))
             ->limit(5)
             ->get()
-            ->map(fn ($l) => [
+            ->map(fn($l) => [
                 'type' => 'Loan',
-                'title' => $l->title ?: ("Loan with " . $l->person->name),
+                'title' => $l->title ?: ('Loan with ' . $l->person->name),
                 'subtitle' => ucfirst($l->direction->value) . " · Outstanding: {$l->outstanding_principal}",
                 'url' => route('loans'),
                 'icon' => 'bi-cash-stack',

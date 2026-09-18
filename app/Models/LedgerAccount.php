@@ -4,16 +4,28 @@ namespace App\Models;
 
 use App\Enums\LedgerAccountKind;
 use App\Enums\LedgerAccountType;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class LedgerAccount extends Model
 {
     protected $fillable = [
-        'user_id','currency_id','parent_id','kind','type','name','institution','last_four',
-        'icon','color','is_system','include_in_net_worth','is_archived','metadata',
+        'user_id',
+        'currency_id',
+        'parent_id',
+        'kind',
+        'type',
+        'name',
+        'institution',
+        'last_four',
+        'icon',
+        'color',
+        'is_system',
+        'include_in_net_worth',
+        'is_archived',
+        'metadata',
     ];
 
     protected function casts(): array
@@ -28,15 +40,31 @@ class LedgerAccount extends Model
         ];
     }
 
-    public function user(): BelongsTo { return $this->belongsTo(User::class); }
-    public function currency(): BelongsTo { return $this->belongsTo(Currency::class); }
-    public function entries(): HasMany { return $this->hasMany(TransactionEntry::class); }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
-    public function scopeForUser(Builder $query, int $userId): Builder { return $query->where('user_id', $userId); }
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function entries(): HasMany
+    {
+        return $this->hasMany(TransactionEntry::class);
+    }
+
+    public function scopeForUser(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
+    }
+
     public function scopeMoneyAccounts(Builder $query): Builder
     {
-        return $query->where('kind', LedgerAccountKind::Asset->value)
-            ->whereIn('type', array_map(fn ($t) => $t->value, [
+        return $query
+            ->where('kind', LedgerAccountKind::Asset->value)
+            ->whereIn('type', array_map(fn($t) => $t->value, [
                 LedgerAccountType::Cash,
                 LedgerAccountType::Bank,
                 LedgerAccountType::MobileWallet,
@@ -48,8 +76,9 @@ class LedgerAccount extends Model
 
     public function balance(?string $asOf = null): float
     {
-        $totals = $this->entries()
-            ->whereHas('transaction', fn ($q) => $q->whereIn('status', ['posted', 'reversed'])->when($asOf, fn ($qq) => $qq->whereDate('transaction_date', '<=', $asOf)))
+        $totals = $this
+            ->entries()
+            ->whereHas('transaction', fn($q) => $q->whereIn('status', ['posted', 'reversed'])->when($asOf, fn($qq) => $qq->whereDate('transaction_date', '<=', $asOf)))
             ->selectRaw('COALESCE(SUM(debit),0) debit_total, COALESCE(SUM(credit),0) credit_total')
             ->first();
 

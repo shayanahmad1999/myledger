@@ -53,82 +53,83 @@
                 </div>
                 <div class="modal-body">
                     <div class="p-3 bg-light rounded mb-3 text-center">
-                        <div class="h3 fw-bold mb-1" id="eventModalAmount"{{ auth()->user()->settings->currency->symbol }} 0</div>
-                        <div class="small text-secondary" id="eventModalDate">Date</div>
+                        <div class="h3 fw-bold mb-1" id="eventModalAmount"{{ auth()->user()->settings->currency->symbol }}
+                            0</div>
+                            <div class="small text-secondary" id="eventModalDate">Date</div>
+                        </div>
+                        <div class="list-group list-group-flush border rounded" id="eventModalDetails">
+                            <!-- Dynamic details -->
+                        </div>
                     </div>
-                    <div class="list-group list-group-flush border rounded" id="eventModalDetails">
-                        <!-- Dynamic details -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-    </div>
-@endsection
+    @endsection
 
-@push('scripts')
-    <script>
-        (() => {
-            const M = window.MyLedger;
-            let currentDate = new Date();
-            let events = [];
+    @push('scripts')
+        <script>
+            (() => {
+                const M = window.MyLedger;
+                let currentDate = new Date();
+                let events = [];
 
-            const titleEl = document.querySelector('#calendarTitle');
-            const gridBody = document.querySelector('#calendarGridBody');
+                const titleEl = document.querySelector('#calendarTitle');
+                const gridBody = document.querySelector('#calendarGridBody');
 
-            async function loadEvents() {
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth();
+                async function loadEvents() {
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth();
 
-                const start = new Date(year, month, 1);
-                const end = new Date(year, month + 1, 0);
+                    const start = new Date(year, month, 1);
+                    const end = new Date(year, month + 1, 0);
 
-                titleEl.textContent = new Intl.DateTimeFormat('en-US', {
-                    month: 'long',
-                    year: 'numeric'
-                }).format(currentDate);
+                    titleEl.textContent = new Intl.DateTimeFormat('en-US', {
+                        month: 'long',
+                        year: 'numeric'
+                    }).format(currentDate);
 
-                try {
-                    events = await M.request(
-                        `/ajax/calendar-events?start=${start.toISOString().slice(0,10)}&end=${end.toISOString().slice(0,10)}`
+                    try {
+                        events = await M.request(
+                            `/ajax/calendar-events?start=${start.toISOString().slice(0,10)}&end=${end.toISOString().slice(0,10)}`
                         );
-                    renderCalendarGrid(year, month);
-                } catch (e) {
-                    M.toast(e.message, 'danger');
+                        renderCalendarGrid(year, month);
+                    } catch (e) {
+                        M.toast(e.message, 'danger');
+                    }
                 }
-            }
 
-            function renderCalendarGrid(year, month) {
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
+                function renderCalendarGrid(year, month) {
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
 
-                // Adjust for Monday start (0: Mon, 6: Sun)
-                let startingDay = (firstDay.getDay() + 6) % 7;
-                let monthLength = lastDay.getDate();
+                    // Adjust for Monday start (0: Mon, 6: Sun)
+                    let startingDay = (firstDay.getDay() + 6) % 7;
+                    let monthLength = lastDay.getDate();
 
-                let html = '';
-                let day = 1;
+                    let html = '';
+                    let day = 1;
 
-                const todayStr = new Date().toISOString().slice(0, 10);
+                    const todayStr = new Date().toISOString().slice(0, 10);
 
-                // 6 rows maximum
-                for (let i = 0; i < 6; i++) {
-                    html += '<tr>';
-                    for (let j = 0; j < 7; j++) {
-                        if (i === 0 && j < startingDay) {
-                            html += '<td class="bg-body-tertiary opacity-50" style="height: 110px;"></td>';
-                        } else if (day > monthLength) {
-                            html += '<td class="bg-body-tertiary opacity-50" style="height: 110px;"></td>';
-                        } else {
-                            const dateStr =
-                                `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                            const isToday = dateStr === todayStr;
+                    // 6 rows maximum
+                    for (let i = 0; i < 6; i++) {
+                        html += '<tr>';
+                        for (let j = 0; j < 7; j++) {
+                            if (i === 0 && j < startingDay) {
+                                html += '<td class="bg-body-tertiary opacity-50" style="height: 110px;"></td>';
+                            } else if (day > monthLength) {
+                                html += '<td class="bg-body-tertiary opacity-50" style="height: 110px;"></td>';
+                            } else {
+                                const dateStr =
+                                    `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                const isToday = dateStr === todayStr;
 
-                            const dayEvents = events.filter(e => e.date === dateStr);
+                                const dayEvents = events.filter(e => e.date === dateStr);
 
-                            html += `
+                                html += `
                         <td class="${isToday ? 'bg-primary-subtle' : ''}" style="height: 110px; vertical-align: top;">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="fw-bold small ${isToday ? 'badge bg-primary' : 'text-secondary'}">${day}</span>
@@ -136,68 +137,69 @@
                             </div>
                             <div class="d-flex flex-column gap-1 overflow-auto" style="max-height: 80px;">
                                 ${dayEvents.slice(0, 3).map(ev => `
-                                        <div class="badge bg-${ev.color}-subtle text-${ev.color} border text-truncate text-start calendar-event-item p-1" data-id="${ev.id}" style="cursor:pointer; font-size:11px;" title="${M.esc(ev.title)}">
-                                            ${M.esc(ev.title)} (${M.money(ev.amount, ev.details.currency)})
-                                        </div>
-                                    `).join('')}
+                                                <div class="badge bg-${ev.color}-subtle text-${ev.color} border text-truncate text-start calendar-event-item p-1" data-id="${ev.id}" style="cursor:pointer; font-size:11px;" title="${M.esc(ev.title)}">
+                                                    ${M.esc(ev.title)} (${M.money(ev.amount, ev.details.currency)})
+                                                </div>
+                                            `).join('')}
                                 ${dayEvents.length > 3 ? `<span class="text-secondary small" style="font-size:10px;">+${dayEvents.length - 3} more</span>` : ''}
                             </div>
                         </td>
                     `;
-                            day++;
+                                day++;
+                            }
                         }
+                        html += '</tr>';
+                        if (day > monthLength) break;
                     }
-                    html += '</tr>';
-                    if (day > monthLength) break;
-                }
 
-                gridBody.innerHTML = html;
+                    gridBody.innerHTML = html;
 
-                gridBody.querySelectorAll('.calendar-event-item').forEach(el => {
-                    el.onclick = () => {
-                        const ev = events.find(x => x.id === el.dataset.id);
-                        if (!ev) return;
+                    gridBody.querySelectorAll('.calendar-event-item').forEach(el => {
+                        el.onclick = () => {
+                            const ev = events.find(x => x.id === el.dataset.id);
+                            if (!ev) return;
 
-                        document.querySelector('#eventModalTitle').textContent = ev.title;
-                        document.querySelector('#eventModalAmount').textContent = M.money(ev.amount, ev.details.currency);
-                        document.querySelector('#eventModalDate').textContent =
-                            `${M.date(ev.date)} · ${ev.type.toUpperCase()}`;
+                            document.querySelector('#eventModalTitle').textContent = ev.title;
+                            document.querySelector('#eventModalAmount').textContent = M.money(ev.amount, ev
+                                .details.currency);
+                            document.querySelector('#eventModalDate').textContent =
+                                `${M.date(ev.date)} · ${ev.type.toUpperCase()}`;
 
-                        let detailsHtml = '';
-                        Object.entries(ev.details || {}).forEach(([k, v]) => {
-                            if (v) {
-                                detailsHtml += `
+                            let detailsHtml = '';
+                            Object.entries(ev.details || {}).forEach(([k, v]) => {
+                                if (v) {
+                                    detailsHtml += `
                             <div class="list-group-item d-flex justify-content-between align-items-center">
                                 <span class="text-secondary text-capitalize">${k.replaceAll('_',' ')}</span>
                                 <strong class="text-end">${M.esc(String(v))}</strong>
                             </div>
                         `;
-                            }
-                        });
+                                }
+                            });
 
-                        document.querySelector('#eventModalDetails').innerHTML = detailsHtml ||
-                            '<div class="p-3 text-center text-secondary small">No additional details available.</div>';
-                        M.modal('eventDetailModal');
-                    };
-                });
-            }
+                            document.querySelector('#eventModalDetails').innerHTML = detailsHtml ||
+                                '<div class="p-3 text-center text-secondary small">No additional details available.</div>';
+                            M.modal('eventDetailModal');
+                        };
+                    });
+                }
 
-            document.querySelector('#btnPrevMonth').onclick = () => {
-                currentDate.setMonth(currentDate.getMonth() - 1);
+                document.querySelector('#btnPrevMonth').onclick = () => {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    loadEvents();
+                };
+
+                document.querySelector('#btnNextMonth').onclick = () => {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    loadEvents();
+                };
+
+                document.querySelector('#btnToday').onclick = () => {
+                    currentDate = new Date();
+                    loadEvents();
+                };
+
                 loadEvents();
-            };
-
-            document.querySelector('#btnNextMonth').onclick = () => {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                loadEvents();
-            };
-
-            document.querySelector('#btnToday').onclick = () => {
-                currentDate = new Date();
-                loadEvents();
-            };
-
-            loadEvents();
-        })();
-    </script>
-@endpush
+            })();
+        </script>
+    @endpush

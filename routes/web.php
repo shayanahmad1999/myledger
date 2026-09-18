@@ -35,7 +35,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/', fn () => redirect()->route('dashboard'));
+    Route::get('/', fn() => redirect()->route('dashboard'));
     Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
     Route::get('/transactions', [PageController::class, 'transactions'])->name('transactions');
     Route::get('/accounts', [PageController::class, 'accounts'])->name('accounts');

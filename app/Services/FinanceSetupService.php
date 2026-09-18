@@ -90,35 +90,30 @@ class FinanceSetupService
                 'kind' => LedgerAccountKind::Equity->value,
                 'include_in_net_worth' => false,
             ],
-
             'receivable' => [
                 'type' => LedgerAccountType::LoanReceivable->value,
                 'name' => config('finance.system_accounts.loan_receivable'),
                 'kind' => LedgerAccountKind::Asset->value,
                 'include_in_net_worth' => true,
             ],
-
             'payable' => [
                 'type' => LedgerAccountType::LoanPayable->value,
                 'name' => config('finance.system_accounts.loan_payable'),
                 'kind' => LedgerAccountKind::Liability->value,
                 'include_in_net_worth' => true,
             ],
-
             'interest_income' => [
                 'type' => LedgerAccountType::InterestIncome->value,
                 'name' => config('finance.system_accounts.interest_income'),
                 'kind' => LedgerAccountKind::Income->value,
                 'include_in_net_worth' => false,
             ],
-
             'interest_expense' => [
                 'type' => LedgerAccountType::InterestExpense->value,
                 'name' => config('finance.system_accounts.interest_expense'),
                 'kind' => LedgerAccountKind::Expense->value,
                 'include_in_net_worth' => false,
             ],
-
             'adjustment' => [
                 'type' => LedgerAccountType::AdjustmentEquity->value,
                 'name' => config('finance.system_accounts.adjustment_equity'),

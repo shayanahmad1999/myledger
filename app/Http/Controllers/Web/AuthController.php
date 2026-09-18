@@ -26,7 +26,7 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors(['email' => 'The provided credentials are incorrect.'])->onlyInput('email');
         }
 
@@ -57,7 +57,7 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $setup->bootstrapUser($user, !empty($data['currency_id']) ? (int)$data['currency_id'] : null);
+        $setup->bootstrapUser($user, !empty($data['currency_id']) ? (int) $data['currency_id'] : null);
         Auth::login($user);
         $request->session()->regenerate();
 

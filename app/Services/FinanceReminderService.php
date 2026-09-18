@@ -31,7 +31,8 @@ class FinanceReminderService
             $isDueReminderTime,
         ) {
             foreach ($users as $user) {
-                $todayNotifications = $user->notifications()
+                $todayNotifications = $user
+                    ->notifications()
                     ->where('created_at', '>=', $now->copy()->startOfDay()->utc())
                     ->get();
 
@@ -41,7 +42,7 @@ class FinanceReminderService
                 }
 
                 $reminder = $user->settings?->daily_reminder_time;
-                if (! $reminder || substr((string) $reminder, 0, 5) !== $now->format('H:i')) {
+                if (!$reminder || substr((string) $reminder, 0, 5) !== $now->format('H:i')) {
                     continue;
                 }
 
@@ -49,7 +50,7 @@ class FinanceReminderService
                     ->whereDate('transaction_date', $today)
                     ->exists();
 
-                if (! $hasActivity && ! $this->alreadySent($todayNotifications, 'daily_record', 0)) {
+                if (!$hasActivity && !$this->alreadySent($todayNotifications, 'daily_record', 0)) {
                     $user->notify(new FinanceReminderNotification(
                         'Record today’s money activity',
                         'No transactions have been recorded today. Add expenses, income, transfers, loans or savings while they are fresh.',
@@ -81,7 +82,7 @@ class FinanceReminderService
             $when = $loan->due_date->toDateString() === $today ? 'today' : 'tomorrow';
             $action = $loan->direction->value === 'given' ? 'receive' : 'pay';
             $user->notify(new FinanceReminderNotification(
-                'Loan due '.$when,
+                'Loan due ' . $when,
                 sprintf(
                     '%s: %s %s from/to %s.',
                     $loan->title ?: 'Loan',

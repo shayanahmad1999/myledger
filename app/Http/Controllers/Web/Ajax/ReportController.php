@@ -112,12 +112,11 @@ class ReportController extends Controller
         return response()->json($reports->dailyBurnRate($request->user(), $from, $to));
     }
 
-
     private function range(Request $request): array
     {
         $data = $request->validate([
             'from' => 'nullable|date',
-            'to'   => 'nullable|date',
+            'to' => 'nullable|date',
         ]);
 
         // Default "from" to earliest transaction date for the user, or start of year if none
@@ -141,5 +140,4 @@ class ReportController extends Controller
 
         return [$from, $to];
     }
-
 }

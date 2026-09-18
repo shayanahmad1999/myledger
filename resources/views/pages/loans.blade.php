@@ -3,19 +3,21 @@
 @section('page-title', 'Loans')
 @section('page-subtitle', 'Track money you lend and money you borrow.')
 @section('content')
-<div class="row g-3 mb-4" data-base-currency-id="{{ auth()->user()->settings?->base_currency_id }}">
+    <div class="row g-3 mb-4" data-base-currency-id="{{ auth()->user()->settings?->base_currency_id }}">
         <div class="col-md-6">
             <div class="surface-card stat-card">
                 <div class="stat-icon"><i class="bi bi-arrow-down-left"></i></div>
                 <div class="stat-label">You will receive</div>
-                <div class="stat-value text-success" id="loanGivenTotal">{{ auth()->user()->settings->currency->symbol }} 0</div>
+                <div class="stat-value text-success" id="loanGivenTotal">{{ auth()->user()->settings->currency->symbol }} 0
+                </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="surface-card stat-card">
                 <div class="stat-icon"><i class="bi bi-arrow-up-right"></i></div>
                 <div class="stat-label">You have to pay</div>
-                <div class="stat-value text-danger" id="loanTakenTotal">{{ auth()->user()->settings->currency->symbol }} 0</div>
+                <div class="stat-value text-danger" id="loanTakenTotal">{{ auth()->user()->settings->currency->symbol }} 0
+                </div>
             </div>
         </div>
     </div>
@@ -197,7 +199,8 @@
                         <div class="mb-2 text-primary fs-3"><i class="bi bi-file-earmark-text-fill"></i></div>
                         <h4 class="h5 fw-bold mb-1" id="receiptLoanTitle">Loan Receipt</h4>
                         <div class="text-secondary small mb-3" id="receiptLoanPerson">Person Name</div>
-                        <div class="h3 fw-bold text-success mb-3" id="receiptLoanAmount">{{ auth()->user()->settings->currency->symbol }} 0</div>
+                        <div class="h3 fw-bold text-success mb-3" id="receiptLoanAmount">
+                            {{ auth()->user()->settings->currency->symbol }} 0</div>
                         <div class="border-top border-bottom py-3 text-start small">
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-secondary">Direction:</span>
@@ -205,7 +208,8 @@
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-secondary">Outstanding Principal:</span>
-                                <strong id="receiptLoanOutstanding">{{ auth()->user()->settings->currency->symbol }} 0</strong>
+                                <strong id="receiptLoanOutstanding">{{ auth()->user()->settings->currency->symbol }}
+                                    0</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-secondary">Start Date:</span>
@@ -331,7 +335,7 @@
                     </td>
                 </tr>
             `).join('') :
-                    '<tr><td colspan="7"><div class="empty-state"><i class="bi bi-cash-stack"></i>No loans found.</div></td></tr>';
+                        '<tr><td colspan="7"><div class="empty-state"><i class="bi bi-cash-stack"></i>No loans found.</div></td></tr>';
                 } catch (e) {
                     M.toast(e.message, 'danger');
                 }
@@ -346,9 +350,11 @@
                     document.querySelector('#receiptLoanTitle').textContent = 'Loan Repayment Receipt';
                     document.querySelector('#receiptLoanPerson').textContent = personName + (l.title ? ` (${l.title})` :
                         '');
-                    document.querySelector('#receiptLoanAmount').textContent = M.money(repayment.amount, l.currency.symbol);
+                    document.querySelector('#receiptLoanAmount').textContent = M.money(repayment.amount, l.currency
+                        .symbol);
                     document.querySelector('#receiptLoanDirection').textContent = dirText;
-                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal, l.currency.symbol);
+                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal, l
+                        .currency.symbol);
                     document.querySelector('#receiptLoanStartDate').textContent = M.date(repayment.date);
                     document.querySelector('#receiptLoanDueDate').textContent = l.due_date ? M.date(l.due_date) : 'N/A';
                     document.querySelector('#receiptLoanStatus').textContent = 'REPAID';
@@ -369,7 +375,8 @@
                     document.querySelector('#receiptLoanPerson').textContent = personName;
                     document.querySelector('#receiptLoanAmount').textContent = M.money(l.principal, l.currency.symbol);
                     document.querySelector('#receiptLoanDirection').textContent = dirText;
-                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal, l.currency.symbol);
+                    document.querySelector('#receiptLoanOutstanding').textContent = M.money(l.outstanding_principal, l
+                        .currency.symbol);
                     document.querySelector('#receiptLoanStartDate').textContent = M.date(l.start_date);
                     document.querySelector('#receiptLoanDueDate').textContent = l.due_date ? M.date(l.due_date) : 'N/A';
                     document.querySelector('#receiptLoanStatus').textContent = String(l.status).toUpperCase();

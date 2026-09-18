@@ -14,7 +14,7 @@ class ProfileController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:150', 'unique:users,email,'.$request->user()->id],
+            'email' => ['required', 'email', 'max:150', 'unique:users,email,' . $request->user()->id],
         ]);
 
         $request->user()->update($data);

@@ -40,7 +40,7 @@ class CurrencyController extends Controller
 
         // Also update/create today's historical rate
         $baseCurrencyId = $request->user()->settings?->base_currency_id;
-        if ($baseCurrencyId && (int)$currency->id !== (int)$baseCurrencyId) {
+        if ($baseCurrencyId && (int) $currency->id !== (int) $baseCurrencyId) {
             ExchangeRateHistory::setRate(
                 $currency->id,
                 $baseCurrencyId,
